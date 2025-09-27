@@ -56,17 +56,18 @@ func main() {
 		return
 	}
 
-		cfg, err := LoadConfig()
+	cfg, err := LoadConfig()
 	if err != nil {
-		cfg = &Config{
-			Model:             "codellama:7b",
-			ChatHistoryLength: 10,
-			TruncationSize:    1000,
-		}
+		cfg = DefaultConfig()
+	}
+	SetActiveConfig(cfg)
+
+	if host := strings.TrimSpace(cfg.OllamaHost); host != "" {
+		_ = os.Setenv("OLLAMA_HOST", host)
 	}
 
 	if modelName == "" {
-		modelName = cfg.Model
+		modelName = cfg.Models.Chat
 	}
 
 	m := InitialModel(modelName, cfg, *metricsFlag)
@@ -76,5 +77,10 @@ func main() {
 	if err := p.Start(); err != nil {
 		fmt.Fprintf(os.Stderr, "Alas, there's been an error: %v\n", err)
 		os.Exit(1)
+	}
+
+	if *metricsFlag && !m.metricsFlushed {
+		m.metrics.DumpJSON(os.Stdout)
+		m.metricsFlushed = true
 	}
 }

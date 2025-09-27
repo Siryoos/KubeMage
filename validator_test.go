@@ -47,13 +47,13 @@ func TestBuildPreExecPlan(t *testing.T) {
 			if tc.expectedDangerous {
 				found := false
 				for _, note := range plan.Notes {
-					if note == "DANGEROUS COMMAND! This may delete multiple resources." {
+					if note == "🚨 CRITICAL: Bulk delete operation detected!" {
 						found = true
 						break
 					}
 				}
 				if !found {
-					t.Errorf("expected dangerous command note, but not found")
+					t.Errorf("expected dangerous command note, but not found. Got notes: %v", plan.Notes)
 				}
 			}
 		})

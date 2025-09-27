@@ -1,4 +1,10 @@
-model: "codellama:7b"
-max_tokens: 2048
-truncation_size: 1000
-chat_history_length: 10
+models:
+    chat: llama3.1:8b
+    generation: llama3.1:13b
+num_ctx: 4096
+keep_alive: 5m
+truncation:
+    message: 1200
+theme: default
+history_length: 10
+ollama_host: http://localhost:11434

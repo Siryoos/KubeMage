@@ -29,7 +29,7 @@ func TestParseCommand(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := parseCommand(tc.input); got != tc.expected {
+			if got := parseCommandFromResponse(tc.input); got != tc.expected {
 				t.Fatalf("expected %q, got %q", tc.expected, got)
 			}
 		})
@@ -37,7 +37,7 @@ func TestParseCommand(t *testing.T) {
 }
 
 func TestBuildChatPrompt(t *testing.T) {
-	cfg := &Config{ChatHistoryLength: 10}
+	cfg := &Config{HistoryLength: 10, Truncation: TruncationSettings{Message: 1000}}
 	m := &model{config: cfg}
 	history := []message{
 		{sender: "User", content: "Hello"},

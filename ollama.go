@@ -16,10 +16,11 @@ import (
 // OllamaRequest represents the request payload for the Ollama API.
 // See: https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
 type OllamaRequest struct {
-	Model  string `json:"model"`
-	Prompt string `json:"prompt"`
-	System string `json:"system"`
-	Stream bool   `json:"stream"`
+	Model   string                 `json:"model"`
+	Prompt  string                 `json:"prompt"`
+	System  string                 `json:"system"`
+	Stream  bool                   `json:"stream"`
+	Options map[string]interface{} `json:"options,omitempty"`
 }
 
 // OllamaResponse represents the response payload from the Ollama API.
@@ -37,14 +38,17 @@ type tagList struct {
 }
 
 const (
-	defaultModelName          = "codellama:7b"
+	defaultModelName          = "deepseek-r1:8b"
 	defaultOllamaEndpoint     = "http://localhost:11434"
 	commandOnlySystemPrompt   = "You are KubeMage, an AI assistant that translates natural language into precise kubectl or helm commands. Always respond with a single command string that can be run as-is. Do not include explanations, markdown, backticks, or additional text. Favor read-only or --dry-run variations when the user intent is ambiguous."
 	chatAssistantSystemPrompt = "You are KubeMage, an AI assistant helping with Kubernetes and Helm. Translate user intent into safe kubectl/helm guidance. Answer with short explanations tailored to the cluster context, then conclude with a fenced ```bash code block containing exactly one command that fulfills the request (prefer read-only or --dry-run first when risky). Warn the user about destructive actions and never assume consent."
 	agentSystemPrompt         = "You are an agent that can use tools to answer questions. You can use the following tools:\n- `kubectl get ...`\n- `kubectl describe ...`\n- `kubectl logs ...`\n- `kubectl events ...`\n\nTo use a tool, you must respond with an `Action:` block, for example:\n```\nAction: kubectl get pods\n```\n\nI will then execute the tool and provide you with an `Observation:` block containing the output.\n\nWhen you have enough information to answer the user's question, you must respond with a `Final:` block containing your final answer."
 )
 
-var httpClient = &http.Client{Timeout: 10 * time.Second}
+var (
+	httpClient      = &http.Client{Timeout: 10 * time.Second}
+	streamingClient = &http.Client{Timeout: 0} // No timeout for streaming
+)
 
 // GenerateCommand returns a single kubectl/helm command for one-shot CLI usage.
 func GenerateCommand(prompt, model string) (string, error) {
@@ -57,6 +61,7 @@ func GenerateCommand(prompt, model string) (string, error) {
 		// Prepend a short context banner. Keep it tiny to save tokens.
 		prompt = fmt.Sprintf("[CTX] %s\n\n%s", ctxSum.RenderedOneLiner, prompt)
 	}
+	prompt = RedactText(prompt)
 
 	res, err := postOllama(prompt, commandOnlySystemPrompt, modelName, false)
 	if err != nil {
@@ -90,6 +95,7 @@ func GenerateChatStream(prompt string, ch chan<- string, model string, systemPro
 		// Prepend a short context banner. Keep it tiny to save tokens.
 		prompt = fmt.Sprintf("[CTX] %s\n\n%s", ctxSum.RenderedOneLiner, prompt)
 	}
+	prompt = RedactText(prompt)
 
 	res, err := postOllama(prompt, systemPrompt, modelName, true)
 	if err != nil {
@@ -124,6 +130,19 @@ func postOllama(prompt, systemPrompt, model string, stream bool) (*http.Response
 		Stream: stream,
 	}
 
+	if cfg := ActiveConfig(); cfg != nil {
+		options := make(map[string]interface{})
+		if cfg.NumCtx > 0 {
+			options["num_ctx"] = cfg.NumCtx
+		}
+		if ka := strings.TrimSpace(cfg.KeepAlive); ka != "" {
+			options["keep_alive"] = ka
+		}
+		if len(options) > 0 {
+			requestPayload.Options = options
+		}
+	}
+
 	payloadBytes, err := json.Marshal(requestPayload)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling JSON: %w", err)
@@ -131,7 +150,11 @@ func postOllama(prompt, systemPrompt, model string, stream bool) (*http.Response
 
 	endpoint := ollamaEndpoint()
 
-	res, err := httpClient.Post(endpoint, "application/json", bytes.NewBuffer(payloadBytes))
+	client := httpClient
+	if stream {
+		client = streamingClient
+	}
+	res, err := client.Post(endpoint, "application/json", bytes.NewBuffer(payloadBytes))
 	if err != nil {
 		return nil, fmt.Errorf("error making request to Ollama API: %w", err)
 	}
