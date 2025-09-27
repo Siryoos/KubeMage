@@ -4,9 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"os"
+	"strings"
+	"time"
 )
 
 // OllamaRequest represents the request payload for the Ollama API.
@@ -26,68 +30,59 @@ type OllamaResponse struct {
 	Done     bool   `json:"done"`
 }
 
-// Generate sends a prompt to the Ollama API and returns the response.
-func Generate(prompt string) (string, error) {
-	systemPrompt := "You are KubeMage, an AI assistant helping with Kubernetes and Helm. You translate user requests into kubectl/helm commands and provide step-by-step explanations. You NEVER execute actions without user confirmation. Favor read-only queries and dry-runs first. Do not suggest destructive actions (like kubectl delete with wildcards) unless explicitly asked, and even then, warn the user. Respond concisely and helpfully. Only output the kubectl/helm command for the following request."
+type tagList struct {
+	Models []struct {
+		Name string `json:"name"`
+	} `json:"models"`
+}
 
-	// Create the request payload
-	requestPayload := OllamaRequest{
-		Model:  "codellama:7b", // Default model, can be changed
-		Prompt: prompt,
-		System: systemPrompt,
-		Stream: false, // For now, we don't stream the response
+const (
+	defaultModelName          = "codellama:7b"
+	defaultOllamaEndpoint     = "http://localhost:11434"
+	commandOnlySystemPrompt   = "You are KubeMage, an AI assistant that translates natural language into precise kubectl or helm commands. Always respond with a single command string that can be run as-is. Do not include explanations, markdown, backticks, or additional text. Favor read-only or --dry-run variations when the user intent is ambiguous."
+	chatAssistantSystemPrompt = "You are KubeMage, an AI assistant helping with Kubernetes and Helm. Translate user intent into safe kubectl/helm guidance. Answer with short explanations tailored to the cluster context, then conclude with a fenced ```bash code block containing exactly one command that fulfills the request (prefer read-only or --dry-run first when risky). Warn the user about destructive actions and never assume consent."
+)
+
+var httpClient = &http.Client{Timeout: 3 * time.Second}
+
+// GenerateCommand returns a single kubectl/helm command for one-shot CLI usage.
+func GenerateCommand(prompt, model string) (string, error) {
+	modelName := model
+	if modelName == "" {
+		modelName = defaultModelName
 	}
 
-	// Marshal the payload to JSON
-	payloadBytes, err := json.Marshal(requestPayload)
+	res, err := postOllama(prompt, commandOnlySystemPrompt, modelName, false)
 	if err != nil {
-		return "", fmt.Errorf("error marshaling JSON: %w", err)
-	}
-
-	// Make the HTTP request to the Ollama API
-	res, err := http.Post("http://localhost:11434/api/generate", "application/json", bytes.NewBuffer(payloadBytes))
-	if err != nil {
-		return "", fmt.Errorf("error making request to Ollama API: %w", err)
+		return "", err
 	}
 	defer res.Body.Close()
 
-	// Read the response body
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return "", fmt.Errorf("error reading response body: %w", err)
 	}
 
-	// Unmarshal the response
 	var ollamaResponse OllamaResponse
 	if err := json.Unmarshal(body, &ollamaResponse); err != nil {
 		return "", fmt.Errorf("error unmarshaling response: %w", err)
 	}
 
-	return ollamaResponse.Response, nil
+	return strings.TrimSpace(ollamaResponse.Response), nil
 }
 
-// GenerateStream sends a prompt to the Ollama API and streams the response.
-func GenerateStream(prompt string, ch chan<- string, model string) {
+// GenerateChatStream sends a prompt to the Ollama API and streams the response.
+func GenerateChatStream(prompt string, ch chan<- string, model string) {
 	defer close(ch)
 
-	systemPrompt := "You are KubeMage, an AI assistant helping with Kubernetes and Helm. You translate user requests into kubectl/helm commands and provide step-by-step explanations. You NEVER execute actions without user confirmation. Favor read-only queries and dry-runs first. Do not suggest destructive actions (like kubectl delete with wildcards) unless explicitly asked, and even then, warn the user. Respond concisely and helpfully. Only output the kubectl/helm command for the following request."
-
-	requestPayload := OllamaRequest{
-		Model:  model,
-		Prompt: prompt,
-		System: systemPrompt,
-		Stream: true,
+	modelName := model
+	if modelName == "" {
+		modelName = defaultModelName
 	}
 
-	payloadBytes, err := json.Marshal(requestPayload)
+	res, err := postOllama(prompt, chatAssistantSystemPrompt, modelName, true)
 	if err != nil {
-		ch <- fmt.Sprintf("Error: %v", err)
-		return
-	}
-
-	res, err := http.Post("http://localhost:11434/api/generate", "application/json", bytes.NewBuffer(payloadBytes))
-	if err != nil {
-		ch <- fmt.Sprintf("Error: %v", err)
+		ch <- fmt.Sprintf("Error contacting Ollama: %v\nStart 'ollama serve' locally or set OLLAMA_HOST to a reachable instance.", err)
 		return
 	}
 	defer res.Body.Close()
@@ -108,4 +103,88 @@ func GenerateStream(prompt string, ch chan<- string, model string) {
 	if err := scanner.Err(); err != nil {
 		ch <- fmt.Sprintf("Error: %v", err)
 	}
+}
+
+func postOllama(prompt, systemPrompt, model string, stream bool) (*http.Response, error) {
+	requestPayload := OllamaRequest{
+		Model:  model,
+		Prompt: prompt,
+		System: systemPrompt,
+		Stream: stream,
+	}
+
+	payloadBytes, err := json.Marshal(requestPayload)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling JSON: %w", err)
+	}
+
+	endpoint := ollamaEndpoint()
+
+	res, err := httpClient.Post(endpoint, "application/json", bytes.NewBuffer(payloadBytes))
+	if err != nil {
+		return nil, fmt.Errorf("error making request to Ollama API: %w", err)
+	}
+
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		defer res.Body.Close()
+		body, _ := io.ReadAll(res.Body)
+		return nil, fmt.Errorf("ollama returned status %d: %s", res.StatusCode, strings.TrimSpace(string(body)))
+	}
+
+	return res, nil
+}
+
+func ollamaEndpoint() string { return ollamaBaseURL() + "/api/generate" }
+
+func ollamaBaseURL() string {
+	host := strings.TrimSpace(os.Getenv("OLLAMA_HOST"))
+	if host == "" {
+		host = defaultOllamaEndpoint
+	}
+	return strings.TrimSuffix(host, "/")
+}
+
+func resolveModel(preferred string, allowFallback bool) (string, string, error) {
+	base := ollamaBaseURL()
+	resp, err := httpClient.Get(base + "/api/tags")
+	if err != nil {
+		return preferred, "", fmt.Errorf("failed to reach Ollama at %s: %w", base, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		body, _ := io.ReadAll(resp.Body)
+		return preferred, "", fmt.Errorf("Ollama at %s returned status %d: %s", base, resp.StatusCode, strings.TrimSpace(string(body)))
+	}
+
+	var tags tagList
+	if err := json.NewDecoder(resp.Body).Decode(&tags); err != nil {
+		return preferred, "", fmt.Errorf("failed to decode Ollama tags: %w", err)
+	}
+
+	if len(tags.Models) == 0 {
+		msg := fmt.Sprintf("Ollama at %s has no models installed. Pull one with 'ollama pull %s'.", base, preferred)
+		if allowFallback {
+			return preferred, msg, nil
+		}
+		return preferred, "", errors.New(msg)
+	}
+
+	if preferred == "" {
+		preferred = defaultModelName
+	}
+
+	for _, m := range tags.Models {
+		if m.Name == preferred {
+			return preferred, fmt.Sprintf("Connected to Ollama at %s using model %s.", base, preferred), nil
+		}
+	}
+
+	if !allowFallback {
+		return preferred, "", fmt.Errorf("model %s is not available on Ollama host %s. Install it with 'ollama pull %s'.", preferred, base, preferred)
+	}
+
+	fallback := tags.Models[0].Name
+	status := fmt.Sprintf("Model %s not found. Using %s instead. Run '/model <name>' to switch.", preferred, fallback)
+	return fallback, status, nil
 }
