@@ -41,15 +41,21 @@ const (
 	defaultOllamaEndpoint     = "http://localhost:11434"
 	commandOnlySystemPrompt   = "You are KubeMage, an AI assistant that translates natural language into precise kubectl or helm commands. Always respond with a single command string that can be run as-is. Do not include explanations, markdown, backticks, or additional text. Favor read-only or --dry-run variations when the user intent is ambiguous."
 	chatAssistantSystemPrompt = "You are KubeMage, an AI assistant helping with Kubernetes and Helm. Translate user intent into safe kubectl/helm guidance. Answer with short explanations tailored to the cluster context, then conclude with a fenced ```bash code block containing exactly one command that fulfills the request (prefer read-only or --dry-run first when risky). Warn the user about destructive actions and never assume consent."
+	agentSystemPrompt         = "You are an agent that can use tools to answer questions. You can use the following tools:\n- `kubectl get ...`\n- `kubectl describe ...`\n- `kubectl logs ...`\n- `kubectl events ...`\n\nTo use a tool, you must respond with an `Action:` block, for example:\n```\nAction: kubectl get pods\n```\n\nI will then execute the tool and provide you with an `Observation:` block containing the output.\n\nWhen you have enough information to answer the user's question, you must respond with a `Final:` block containing your final answer."
 )
 
-var httpClient = &http.Client{Timeout: 3 * time.Second}
+var httpClient = &http.Client{Timeout: 10 * time.Second}
 
 // GenerateCommand returns a single kubectl/helm command for one-shot CLI usage.
 func GenerateCommand(prompt, model string) (string, error) {
 	modelName := model
 	if modelName == "" {
 		modelName = defaultModelName
+	}
+
+	if ctxSum, err := BuildContextSummary(); err == nil && ctxSum != nil {
+		// Prepend a short context banner. Keep it tiny to save tokens.
+		prompt = fmt.Sprintf("[CTX] %s\n\n%s", ctxSum.RenderedOneLiner, prompt)
 	}
 
 	res, err := postOllama(prompt, commandOnlySystemPrompt, modelName, false)
@@ -72,7 +78,7 @@ func GenerateCommand(prompt, model string) (string, error) {
 }
 
 // GenerateChatStream sends a prompt to the Ollama API and streams the response.
-func GenerateChatStream(prompt string, ch chan<- string, model string) {
+func GenerateChatStream(prompt string, ch chan<- string, model string, systemPrompt string) {
 	defer close(ch)
 
 	modelName := model
@@ -80,7 +86,12 @@ func GenerateChatStream(prompt string, ch chan<- string, model string) {
 		modelName = defaultModelName
 	}
 
-	res, err := postOllama(prompt, chatAssistantSystemPrompt, modelName, true)
+	if ctxSum, err := BuildContextSummary(); err == nil && ctxSum != nil {
+		// Prepend a short context banner. Keep it tiny to save tokens.
+		prompt = fmt.Sprintf("[CTX] %s\n\n%s", ctxSum.RenderedOneLiner, prompt)
+	}
+
+	res, err := postOllama(prompt, systemPrompt, modelName, true)
 	if err != nil {
 		ch <- fmt.Sprintf("Error contacting Ollama: %v\nStart 'ollama serve' locally or set OLLAMA_HOST to a reachable instance.", err)
 		return
@@ -142,6 +153,31 @@ func ollamaBaseURL() string {
 		host = defaultOllamaEndpoint
 	}
 	return strings.TrimSuffix(host, "/")
+}
+
+func ListModels() ([]string, error) {
+	base := ollamaBaseURL()
+	resp, err := httpClient.Get(base + "/api/tags")
+	if err != nil {
+		return nil, fmt.Errorf("failed to reach Ollama at %s: %w", base, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Ollama at %s returned status %d: %s", base, resp.StatusCode, strings.TrimSpace(string(body)))
+	}
+
+	var tags tagList
+	if err := json.NewDecoder(resp.Body).Decode(&tags); err != nil {
+		return nil, fmt.Errorf("failed to decode Ollama tags: %w", err)
+	}
+
+	var modelNames []string
+	for _, m := range tags.Models {
+		modelNames = append(modelNames, m.Name)
+	}
+	return modelNames, nil
 }
 
 func resolveModel(preferred string, allowFallback bool) (string, string, error) {

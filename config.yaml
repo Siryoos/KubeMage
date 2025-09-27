@@ -1,0 +1,4 @@
+model: "codellama:7b"
+max_tokens: 2048
+truncation_size: 1000
+chat_history_length: 10

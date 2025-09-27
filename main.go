@@ -19,6 +19,7 @@ func main() {
 
 	queryFlag := flag.String("query", "", "Translate a natural language request into a kubectl/helm command and print it.")
 	modelFlag := flag.String("model", defaultModelName, "Ollama model to use.")
+	metricsFlag := flag.Bool("metrics", false, "Dump metrics at the end.")
 
 	flag.Parse()
 
@@ -55,7 +56,20 @@ func main() {
 		return
 	}
 
-	m := InitialModel(modelName)
+		cfg, err := LoadConfig()
+	if err != nil {
+		cfg = &Config{
+			Model:             "codellama:7b",
+			ChatHistoryLength: 10,
+			TruncationSize:    1000,
+		}
+	}
+
+	if modelName == "" {
+		modelName = cfg.Model
+	}
+
+	m := InitialModel(modelName, cfg, *metricsFlag)
 	p := tea.NewProgram(m)
 	m.program = p
 

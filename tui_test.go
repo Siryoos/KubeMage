@@ -1,7 +1,6 @@
 package main
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -38,23 +37,15 @@ func TestParseCommand(t *testing.T) {
 }
 
 func TestBuildChatPrompt(t *testing.T) {
+	cfg := &Config{ChatHistoryLength: 10}
+	m := &model{config: cfg}
 	history := []message{
-		{sender: user, content: "List pods"},
-		{sender: assist, content: "Sure, let me help."},
-		{sender: execSender, content: "pod output"},
+		{sender: "User", content: "Hello"},
+		{sender: "Assistant", content: "Hi there"},
 	}
-
-	prompt := buildChatPrompt(history)
-
-	if !strings.Contains(prompt, "User: List pods") {
-		t.Fatalf("prompt missing user context: %q", prompt)
-	}
-
-	if !strings.Contains(prompt, "Assistant: Sure, let me help.") {
-		t.Fatalf("prompt missing assistant context: %q", prompt)
-	}
-
-	if !strings.HasSuffix(prompt, "Assistant:") {
-		t.Fatalf("prompt should end by cueing the assistant: %q", prompt)
+	prompt := m.buildChatPrompt(history)
+	expected := "User: Hello\n\nAssistant: Hi there\n\nAssistant:"
+	if prompt != expected {
+		t.Errorf("expected prompt %q, got %q", expected, prompt)
 	}
 }

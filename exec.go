@@ -8,8 +8,18 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type execMsg string
-type execDoneMsg struct{}
+type stdoutMsg struct {
+	cmd string
+	out string
+}
+type stderrMsg struct {
+	cmd string
+	out string
+}
+type execDoneMsg struct {
+	cmd string
+	err error
+}
 
 func execCmd(command string, p *tea.Program) tea.Cmd {
 	return func() tea.Msg {
@@ -17,44 +27,33 @@ func execCmd(command string, p *tea.Program) tea.Cmd {
 
 		stdout, err := cmd.StdoutPipe()
 		if err != nil {
-			p.Send(execMsg(fmt.Sprintf("error creating stdout pipe: %v", err)))
-			return execDoneMsg{}
+			return execDoneMsg{cmd: command, err: fmt.Errorf("error creating stdout pipe: %w", err)}
 		}
 
 		stderr, err := cmd.StderrPipe()
 		if err != nil {
-			p.Send(execMsg(fmt.Sprintf("error creating stderr pipe: %v", err)))
-			return execDoneMsg{}
+			return execDoneMsg{cmd: command, err: fmt.Errorf("error creating stderr pipe: %w", err)}
 		}
 
 		if err := cmd.Start(); err != nil {
-			p.Send(execMsg(fmt.Sprintf("error starting command: %v", err)))
-			return execDoneMsg{}
+			return execDoneMsg{cmd: command, err: fmt.Errorf("error starting command: %w", err)}
 		}
 
 		go func() {
 			scanner := bufio.NewScanner(stdout)
 			for scanner.Scan() {
-				p.Send(execMsg(scanner.Text()))
-			}
-			if err := scanner.Err(); err != nil {
-				p.Send(execMsg(fmt.Sprintf("stdout error: %v", err)))
+				p.Send(stdoutMsg{cmd: command, out: scanner.Text()})
 			}
 		}()
 
 		go func() {
 			scanner := bufio.NewScanner(stderr)
 			for scanner.Scan() {
-				p.Send(execMsg(scanner.Text()))
-			}
-			if err := scanner.Err(); err != nil {
-				p.Send(execMsg(fmt.Sprintf("stderr error: %v", err)))
+				p.Send(stderrMsg{cmd: command, out: scanner.Text()})
 			}
 		}()
 
-		if err := cmd.Wait(); err != nil {
-			p.Send(execMsg(fmt.Sprintf("command exited with error: %v", err)))
-		}
-		return execDoneMsg{}
+		err = cmd.Wait()
+		return execDoneMsg{cmd: command, err: err}
 	}
 }
