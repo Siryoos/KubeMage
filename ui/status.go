@@ -23,10 +23,10 @@ type StatusInfo struct {
 
 // StatusBar manages the status bar display
 type StatusBar struct {
-	theme        *Theme
-	info         StatusInfo
-	lastUpdate   time.Time
-	isProdWarn   bool
+	theme      *Theme
+	info       StatusInfo
+	lastUpdate time.Time
+	isProdWarn bool
 }
 
 // NewStatusBar creates a new status bar

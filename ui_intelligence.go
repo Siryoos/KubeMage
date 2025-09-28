@@ -21,14 +21,14 @@ type IntelligentUI struct {
 
 // AISuggestion represents intelligent suggestions for the user
 type AISuggestion struct {
-	ID          string    `json:"id"`
-	Type        string    `json:"type"`        // "command", "explanation", "optimization"
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Action      string    `json:"action"`
-	Confidence  float64   `json:"confidence"`
-	Icon        string    `json:"icon"`
-	Hotkey      string    `json:"hotkey"`
+	ID          string  `json:"id"`
+	Type        string  `json:"type"` // "command", "explanation", "optimization"
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Action      string  `json:"action"`
+	Confidence  float64 `json:"confidence"`
+	Icon        string  `json:"icon"`
+	Hotkey      string  `json:"hotkey"`
 }
 
 // NewIntelligentUI creates a new intelligent UI instance

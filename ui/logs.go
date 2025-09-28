@@ -40,20 +40,20 @@ type LogFilter struct {
 
 // LogViewer manages log display with filtering and search
 type LogViewer struct {
-	theme           *Theme
-	lines           []LogLine
-	filteredLines   []LogLine
-	filter          LogFilter
-	viewOffset      int
-	viewHeight      int
-	viewWidth       int
-	defaultLimit    int
-	expanded        bool
-	searchActive    bool
-	searchQuery     string
-	focused         bool
-	truncatedCount  int
-	totalLines      int
+	theme          *Theme
+	lines          []LogLine
+	filteredLines  []LogLine
+	filter         LogFilter
+	viewOffset     int
+	viewHeight     int
+	viewWidth      int
+	defaultLimit   int
+	expanded       bool
+	searchActive   bool
+	searchQuery    string
+	focused        bool
+	truncatedCount int
+	totalLines     int
 }
 
 // Log level patterns for parsing
@@ -66,17 +66,17 @@ var logLevelPatterns = map[LogLevel]*regexp.Regexp{
 
 // Timestamp patterns for parsing
 var timestampPatterns = []*regexp.Regexp{
-	regexp.MustCompile(`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}`),                      // ISO format
-	regexp.MustCompile(`\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}`),                      // Standard format
-	regexp.MustCompile(`\w{3} \d{2} \d{2}:\d{2}:\d{2}`),                            // Syslog format
-	regexp.MustCompile(`\d{2}:\d{2}:\d{2}`),                                         // Time only
+	regexp.MustCompile(`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}`), // ISO format
+	regexp.MustCompile(`\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}`), // Standard format
+	regexp.MustCompile(`\w{3} \d{2} \d{2}:\d{2}:\d{2}`),       // Syslog format
+	regexp.MustCompile(`\d{2}:\d{2}:\d{2}`),                   // Time only
 }
 
 // NewLogViewer creates a new log viewer
 func NewLogViewer(theme *Theme) *LogViewer {
 	return &LogViewer{
-		theme:        theme,
-		lines:        []LogLine{},
+		theme:         theme,
+		lines:         []LogLine{},
 		filteredLines: []LogLine{},
 		filter: LogFilter{
 			Level: LogLevelAll,

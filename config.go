@@ -10,10 +10,10 @@ import (
 )
 
 type ModelSettings struct {
-	Chat       string  `yaml:"chat"`
-	Generation string  `yaml:"generation"`
-	Temperature float64 `yaml:"temperature"`
-	TopP       float64  `yaml:"top_p"`
+	Chat          string  `yaml:"chat"`
+	Generation    string  `yaml:"generation"`
+	Temperature   float64 `yaml:"temperature"`
+	TopP          float64 `yaml:"top_p"`
 	RepeatPenalty float64 `yaml:"repeat_penalty"`
 }
 
@@ -23,22 +23,22 @@ type TruncationSettings struct {
 }
 
 type IntelligenceSettings struct {
-	Enabled              bool    `yaml:"enabled"`
-	ContextCacheTTL      int     `yaml:"context_cache_ttl"`      // seconds
-	ConfidenceThreshold  float64 `yaml:"confidence_threshold"`   // 0.0-1.0
-	AutoOptimization     bool    `yaml:"auto_optimization"`
-	LearningEnabled      bool    `yaml:"learning_enabled"`
-	PlaybooksEnabled     bool    `yaml:"playbooks_enabled"`
-	RiskAssessment       bool    `yaml:"risk_assessment"`
-	QuickActionsEnabled  bool    `yaml:"quick_actions_enabled"`
+	Enabled             bool    `yaml:"enabled"`
+	ContextCacheTTL     int     `yaml:"context_cache_ttl"`    // seconds
+	ConfidenceThreshold float64 `yaml:"confidence_threshold"` // 0.0-1.0
+	AutoOptimization    bool    `yaml:"auto_optimization"`
+	LearningEnabled     bool    `yaml:"learning_enabled"`
+	PlaybooksEnabled    bool    `yaml:"playbooks_enabled"`
+	RiskAssessment      bool    `yaml:"risk_assessment"`
+	QuickActionsEnabled bool    `yaml:"quick_actions_enabled"`
 }
 
 type PerformanceSettings struct {
-	MaxConcurrent     int `yaml:"max_concurrent"`      // Max concurrent operations
-	CommandTimeout    int `yaml:"command_timeout"`     // seconds
-	ResponseTimeout   int `yaml:"response_timeout"`    // seconds
-	RenderThrottle    int `yaml:"render_throttle"`     // milliseconds
-	MemoryLimit       int `yaml:"memory_limit"`        // MB
+	MaxConcurrent   int `yaml:"max_concurrent"`   // Max concurrent operations
+	CommandTimeout  int `yaml:"command_timeout"`  // seconds
+	ResponseTimeout int `yaml:"response_timeout"` // seconds
+	RenderThrottle  int `yaml:"render_throttle"`  // milliseconds
+	MemoryLimit     int `yaml:"memory_limit"`     // MB
 }
 
 type legacyPreferences struct {
@@ -78,21 +78,21 @@ func DefaultConfig() *AppConfig {
 			Logs:    200,
 		},
 		Intelligence: IntelligenceSettings{
-			Enabled:              true,
-			ContextCacheTTL:      30,   // 30 seconds
-			ConfidenceThreshold:  0.7,  // 70% confidence threshold
-			AutoOptimization:     false, // User approval required
-			LearningEnabled:      true,
-			PlaybooksEnabled:     true,
-			RiskAssessment:       true,
-			QuickActionsEnabled:  true,
+			Enabled:             true,
+			ContextCacheTTL:     30,    // 30 seconds
+			ConfidenceThreshold: 0.7,   // 70% confidence threshold
+			AutoOptimization:    false, // User approval required
+			LearningEnabled:     true,
+			PlaybooksEnabled:    true,
+			RiskAssessment:      true,
+			QuickActionsEnabled: true,
 		},
 		Performance: PerformanceSettings{
-			MaxConcurrent:   3,     // 3 concurrent operations
-			CommandTimeout:  8,     // 8 seconds for commands
-			ResponseTimeout: 120,   // 2 minutes for LLM responses
-			RenderThrottle:  40,    // 40ms render throttle
-			MemoryLimit:     512,   // 512MB memory limit
+			MaxConcurrent:   3,   // 3 concurrent operations
+			CommandTimeout:  8,   // 8 seconds for commands
+			ResponseTimeout: 120, // 2 minutes for LLM responses
+			RenderThrottle:  40,  // 40ms render throttle
+			MemoryLimit:     512, // 512MB memory limit
 		},
 		Theme:         "default",
 		HistoryLength: 10,

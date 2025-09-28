@@ -17,78 +17,78 @@ type OptimizationAdvisor struct {
 
 // Recommendation represents an actionable optimization suggestion
 type Recommendation struct {
-	ID             string                 `json:"id"`
-	Type           string                 `json:"type"`        // "resource", "network", "security", "cost"
-	Severity       string                 `json:"severity"`    // "info", "warning", "critical"
-	Title          string                 `json:"title"`
-	Description    string                 `json:"description"`
-	Impact         string                 `json:"impact"`      // Expected improvement
-	PreviewCmd     string                 `json:"preview_cmd"` // kubectl apply --dry-run command
-	DiffSuggestion string                 `json:"diff_suggestion"` // Proposed diff
-	EstimatedSavings string               `json:"estimated_savings"` // Cost or resource savings
-	RiskLevel      string                 `json:"risk_level"`  // "low", "medium", "high"
-	Category       string                 `json:"category"`    // Specific optimization category
-	Automated      bool                   `json:"automated"`   // Can be auto-applied
+	ID               string `json:"id"`
+	Type             string `json:"type"`     // "resource", "network", "security", "cost"
+	Severity         string `json:"severity"` // "info", "warning", "critical"
+	Title            string `json:"title"`
+	Description      string `json:"description"`
+	Impact           string `json:"impact"`            // Expected improvement
+	PreviewCmd       string `json:"preview_cmd"`       // kubectl apply --dry-run command
+	DiffSuggestion   string `json:"diff_suggestion"`   // Proposed diff
+	EstimatedSavings string `json:"estimated_savings"` // Cost or resource savings
+	RiskLevel        string `json:"risk_level"`        // "low", "medium", "high"
+	Category         string `json:"category"`          // Specific optimization category
+	Automated        bool   `json:"automated"`         // Can be auto-applied
 }
 
 // ResourceUtilization represents current resource usage patterns
 type ResourceUtilization struct {
-	Namespace    string                    `json:"namespace"`
-	Pod          string                    `json:"pod"`
-	Container    string                    `json:"container"`
-	CPUUsage     string                    `json:"cpu_usage"`
-	MemoryUsage  string                    `json:"memory_usage"`
-	CPURequest   string                    `json:"cpu_request"`
+	Namespace     string                   `json:"namespace"`
+	Pod           string                   `json:"pod"`
+	Container     string                   `json:"container"`
+	CPUUsage      string                   `json:"cpu_usage"`
+	MemoryUsage   string                   `json:"memory_usage"`
+	CPURequest    string                   `json:"cpu_request"`
 	MemoryRequest string                   `json:"memory_request"`
-	CPULimit     string                    `json:"cpu_limit"`
-	MemoryLimit  string                   `json:"memory_limit"`
-	Utilization  ResourceUtilizationRatio `json:"utilization"`
+	CPULimit      string                   `json:"cpu_limit"`
+	MemoryLimit   string                   `json:"memory_limit"`
+	Utilization   ResourceUtilizationRatio `json:"utilization"`
 }
 
 type ResourceUtilizationRatio struct {
-	CPUUtilization    float64 `json:"cpu_utilization"`    // Usage vs Request
-	MemoryUtilization float64 `json:"memory_utilization"` // Usage vs Request
-	OverprovisedCPU   bool    `json:"overprovisioned_cpu"`
-	OverprovisedMemory bool   `json:"overprovisioned_memory"`
-	UnderprovisedCPU   bool   `json:"underprovisioned_cpu"`
-	UnderprovisedMemory bool  `json:"underprovisioned_memory"`
+	CPUUtilization      float64 `json:"cpu_utilization"`    // Usage vs Request
+	MemoryUtilization   float64 `json:"memory_utilization"` // Usage vs Request
+	OverprovisedCPU     bool    `json:"overprovisioned_cpu"`
+	OverprovisedMemory  bool    `json:"overprovisioned_memory"`
+	UnderprovisedCPU    bool    `json:"underprovisioned_cpu"`
+	UnderprovisedMemory bool    `json:"underprovisioned_memory"`
 }
 
 // NetworkAnalysis represents network configuration analysis
 type NetworkAnalysis struct {
-	Namespace       string               `json:"namespace"`
-	OrphanedServices []OrphanedService   `json:"orphaned_services"`
-	IngressIssues   []IngressIssue      `json:"ingress_issues"`
-	ServiceMesh     *ServiceMeshAnalysis `json:"service_mesh"`
-	NetworkPolicies []NetworkPolicyGap  `json:"network_policies"`
+	Namespace        string               `json:"namespace"`
+	OrphanedServices []OrphanedService    `json:"orphaned_services"`
+	IngressIssues    []IngressIssue       `json:"ingress_issues"`
+	ServiceMesh      *ServiceMeshAnalysis `json:"service_mesh"`
+	NetworkPolicies  []NetworkPolicyGap   `json:"network_policies"`
 }
 
 type OrphanedService struct {
-	Name        string `json:"name"`
-	Namespace   string `json:"namespace"`
-	Reason      string `json:"reason"`
-	Suggestion  string `json:"suggestion"`
+	Name       string `json:"name"`
+	Namespace  string `json:"namespace"`
+	Reason     string `json:"reason"`
+	Suggestion string `json:"suggestion"`
 }
 
 type IngressIssue struct {
-	Name        string `json:"name"`
-	Namespace   string `json:"namespace"`
-	Issue       string `json:"issue"`
-	Fix         string `json:"fix"`
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+	Issue     string `json:"issue"`
+	Fix       string `json:"fix"`
 }
 
 type ServiceMeshAnalysis struct {
-	Detected     bool     `json:"detected"`
-	Type         string   `json:"type"` // "istio", "linkerd", "consul"
-	Issues       []string `json:"issues"`
+	Detected      bool     `json:"detected"`
+	Type          string   `json:"type"` // "istio", "linkerd", "consul"
+	Issues        []string `json:"issues"`
 	Optimizations []string `json:"optimizations"`
 }
 
 type NetworkPolicyGap struct {
-	Namespace   string `json:"namespace"`
-	Missing     string `json:"missing"`
-	Risk        string `json:"risk"`
-	Suggestion  string `json:"suggestion"`
+	Namespace  string `json:"namespace"`
+	Missing    string `json:"missing"`
+	Risk       string `json:"risk"`
+	Suggestion string `json:"suggestion"`
 }
 
 // NewOptimizationAdvisor creates a new optimization advisor
@@ -113,36 +113,36 @@ func (oa *OptimizationAdvisor) AnalyzeResourceUtilization(ns string) ([]Recommen
 		// Check for overprovisioning
 		if util.Utilization.OverprovisedCPU {
 			recommendations = append(recommendations, Recommendation{
-				ID:          fmt.Sprintf("cpu-overprovision-%s-%s", util.Pod, util.Container),
-				Type:        "resource",
-				Severity:    "warning",
-				Title:       "CPU Overprovisioning Detected",
+				ID:       fmt.Sprintf("cpu-overprovision-%s-%s", util.Pod, util.Container),
+				Type:     "resource",
+				Severity: "warning",
+				Title:    "CPU Overprovisioning Detected",
 				Description: fmt.Sprintf("Container %s in pod %s is using only %.1f%% of requested CPU",
 					util.Container, util.Pod, util.Utilization.CPUUtilization*100),
-				Impact:       "Reduce CPU requests by 30-50% to free up cluster capacity",
-				Category:     "cost-optimization",
-				RiskLevel:    "low",
-				Automated:    true,
-				PreviewCmd:   oa.generateResourcePatchCommand(util, "cpu", "reduce"),
-				DiffSuggestion: oa.generateResourceDiff(util, "cpu", "reduce"),
+				Impact:           "Reduce CPU requests by 30-50% to free up cluster capacity",
+				Category:         "cost-optimization",
+				RiskLevel:        "low",
+				Automated:        true,
+				PreviewCmd:       oa.generateResourcePatchCommand(util, "cpu", "reduce"),
+				DiffSuggestion:   oa.generateResourceDiff(util, "cpu", "reduce"),
 				EstimatedSavings: "~20-40% cost reduction",
 			})
 		}
 
 		if util.Utilization.OverprovisedMemory {
 			recommendations = append(recommendations, Recommendation{
-				ID:          fmt.Sprintf("memory-overprovision-%s-%s", util.Pod, util.Container),
-				Type:        "resource",
-				Severity:    "warning",
-				Title:       "Memory Overprovisioning Detected",
+				ID:       fmt.Sprintf("memory-overprovision-%s-%s", util.Pod, util.Container),
+				Type:     "resource",
+				Severity: "warning",
+				Title:    "Memory Overprovisioning Detected",
 				Description: fmt.Sprintf("Container %s in pod %s is using only %.1f%% of requested memory",
 					util.Container, util.Pod, util.Utilization.MemoryUtilization*100),
-				Impact:       "Reduce memory requests to optimize cluster utilization",
-				Category:     "cost-optimization",
-				RiskLevel:    "medium",
-				Automated:    false, // Memory changes are riskier
-				PreviewCmd:   oa.generateResourcePatchCommand(util, "memory", "reduce"),
-				DiffSuggestion: oa.generateResourceDiff(util, "memory", "reduce"),
+				Impact:           "Reduce memory requests to optimize cluster utilization",
+				Category:         "cost-optimization",
+				RiskLevel:        "medium",
+				Automated:        false, // Memory changes are riskier
+				PreviewCmd:       oa.generateResourcePatchCommand(util, "memory", "reduce"),
+				DiffSuggestion:   oa.generateResourceDiff(util, "memory", "reduce"),
 				EstimatedSavings: "~15-30% cost reduction",
 			})
 		}
@@ -150,36 +150,36 @@ func (oa *OptimizationAdvisor) AnalyzeResourceUtilization(ns string) ([]Recommen
 		// Check for underprovisioning
 		if util.Utilization.UnderprovisedCPU {
 			recommendations = append(recommendations, Recommendation{
-				ID:          fmt.Sprintf("cpu-underprovision-%s-%s", util.Pod, util.Container),
-				Type:        "resource",
-				Severity:    "critical",
-				Title:       "CPU Underprovisioning Detected",
+				ID:       fmt.Sprintf("cpu-underprovision-%s-%s", util.Pod, util.Container),
+				Type:     "resource",
+				Severity: "critical",
+				Title:    "CPU Underprovisioning Detected",
 				Description: fmt.Sprintf("Container %s in pod %s is using %.1f%% of requested CPU (likely throttled)",
 					util.Container, util.Pod, util.Utilization.CPUUtilization*100),
-				Impact:       "Increase CPU requests/limits to improve performance",
-				Category:     "performance",
-				RiskLevel:    "medium",
-				Automated:    false,
-				PreviewCmd:   oa.generateResourcePatchCommand(util, "cpu", "increase"),
-				DiffSuggestion: oa.generateResourceDiff(util, "cpu", "increase"),
+				Impact:           "Increase CPU requests/limits to improve performance",
+				Category:         "performance",
+				RiskLevel:        "medium",
+				Automated:        false,
+				PreviewCmd:       oa.generateResourcePatchCommand(util, "cpu", "increase"),
+				DiffSuggestion:   oa.generateResourceDiff(util, "cpu", "increase"),
 				EstimatedSavings: "Improved application performance",
 			})
 		}
 
 		if util.Utilization.UnderprovisedMemory {
 			recommendations = append(recommendations, Recommendation{
-				ID:          fmt.Sprintf("memory-underprovision-%s-%s", util.Pod, util.Container),
-				Type:        "resource",
-				Severity:    "critical",
-				Title:       "Memory Underprovisioning Detected",
+				ID:       fmt.Sprintf("memory-underprovision-%s-%s", util.Pod, util.Container),
+				Type:     "resource",
+				Severity: "critical",
+				Title:    "Memory Underprovisioning Detected",
 				Description: fmt.Sprintf("Container %s in pod %s is using %.1f%% of requested memory (risk of OOMKill)",
 					util.Container, util.Pod, util.Utilization.MemoryUtilization*100),
-				Impact:       "Increase memory requests/limits to prevent OOMKilled",
-				Category:     "reliability",
-				RiskLevel:    "high",
-				Automated:    false,
-				PreviewCmd:   oa.generateResourcePatchCommand(util, "memory", "increase"),
-				DiffSuggestion: oa.generateResourceDiff(util, "memory", "increase"),
+				Impact:           "Increase memory requests/limits to prevent OOMKilled",
+				Category:         "reliability",
+				RiskLevel:        "high",
+				Automated:        false,
+				PreviewCmd:       oa.generateResourcePatchCommand(util, "memory", "increase"),
+				DiffSuggestion:   oa.generateResourceDiff(util, "memory", "increase"),
 				EstimatedSavings: "Prevent application crashes",
 			})
 		}
@@ -200,16 +200,16 @@ func (oa *OptimizationAdvisor) AnalyzeNetworkConfiguration(ns string) ([]Recomme
 	// Check for orphaned services
 	for _, orphaned := range analysis.OrphanedServices {
 		recommendations = append(recommendations, Recommendation{
-			ID:          fmt.Sprintf("orphaned-service-%s", orphaned.Name),
-			Type:        "network",
-			Severity:    "warning",
-			Title:       "Orphaned Service Detected",
-			Description: fmt.Sprintf("Service %s has no backing pods", orphaned.Name),
-			Impact:      "Remove unused service to reduce complexity",
-			Category:    "cleanup",
-			RiskLevel:   "low",
-			Automated:   false,
-			PreviewCmd:  fmt.Sprintf("kubectl delete service %s -n %s --dry-run=client", orphaned.Name, ns),
+			ID:             fmt.Sprintf("orphaned-service-%s", orphaned.Name),
+			Type:           "network",
+			Severity:       "warning",
+			Title:          "Orphaned Service Detected",
+			Description:    fmt.Sprintf("Service %s has no backing pods", orphaned.Name),
+			Impact:         "Remove unused service to reduce complexity",
+			Category:       "cleanup",
+			RiskLevel:      "low",
+			Automated:      false,
+			PreviewCmd:     fmt.Sprintf("kubectl delete service %s -n %s --dry-run=client", orphaned.Name, ns),
 			DiffSuggestion: fmt.Sprintf("- Remove service %s (no backing pods)", orphaned.Name),
 		})
 	}
@@ -217,15 +217,15 @@ func (oa *OptimizationAdvisor) AnalyzeNetworkConfiguration(ns string) ([]Recomme
 	// Check for ingress issues
 	for _, issue := range analysis.IngressIssues {
 		recommendations = append(recommendations, Recommendation{
-			ID:          fmt.Sprintf("ingress-issue-%s", issue.Name),
-			Type:        "network",
-			Severity:    "warning",
-			Title:       "Ingress Configuration Issue",
-			Description: fmt.Sprintf("Ingress %s: %s", issue.Name, issue.Issue),
-			Impact:      "Fix ingress configuration for proper traffic routing",
-			Category:    "connectivity",
-			RiskLevel:   "medium",
-			Automated:   false,
+			ID:             fmt.Sprintf("ingress-issue-%s", issue.Name),
+			Type:           "network",
+			Severity:       "warning",
+			Title:          "Ingress Configuration Issue",
+			Description:    fmt.Sprintf("Ingress %s: %s", issue.Name, issue.Issue),
+			Impact:         "Fix ingress configuration for proper traffic routing",
+			Category:       "connectivity",
+			RiskLevel:      "medium",
+			Automated:      false,
 			DiffSuggestion: issue.Fix,
 		})
 	}
@@ -233,15 +233,15 @@ func (oa *OptimizationAdvisor) AnalyzeNetworkConfiguration(ns string) ([]Recomme
 	// Check for missing network policies
 	for _, gap := range analysis.NetworkPolicies {
 		recommendations = append(recommendations, Recommendation{
-			ID:          fmt.Sprintf("netpol-gap-%s", gap.Namespace),
-			Type:        "security",
-			Severity:    "warning",
-			Title:       "Missing Network Policy",
-			Description: fmt.Sprintf("Namespace %s lacks network isolation", gap.Namespace),
-			Impact:      "Implement network policies for better security",
-			Category:    "security",
-			RiskLevel:   "medium",
-			Automated:   false,
+			ID:             fmt.Sprintf("netpol-gap-%s", gap.Namespace),
+			Type:           "security",
+			Severity:       "warning",
+			Title:          "Missing Network Policy",
+			Description:    fmt.Sprintf("Namespace %s lacks network isolation", gap.Namespace),
+			Impact:         "Implement network policies for better security",
+			Category:       "security",
+			RiskLevel:      "medium",
+			Automated:      false,
 			DiffSuggestion: oa.generateNetworkPolicyTemplate(gap),
 		})
 	}

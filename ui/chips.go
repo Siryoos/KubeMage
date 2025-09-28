@@ -20,12 +20,12 @@ type ChipAction struct {
 
 // QuickActionChips manages a row of actionable chips
 type QuickActionChips struct {
-	theme       *Theme
-	chips       []ChipAction
-	focused     int
-	messageID   string
-	enabled     bool
-	maxVisible  int
+	theme      *Theme
+	chips      []ChipAction
+	focused    int
+	messageID  string
+	enabled    bool
+	maxVisible int
 }
 
 // ChipSet contains predefined chip configurations for different contexts

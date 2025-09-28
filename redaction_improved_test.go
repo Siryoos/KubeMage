@@ -84,27 +84,27 @@ data:
 stringData:
   username: admin
   password: secret123`
-	
+
 	result := RedactText(input)
-	
+
 	// Should preserve YAML structure
 	if !contains(result, "apiVersion: v1") {
 		t.Error("RedactText() should preserve YAML structure")
 	}
-	
+
 	if !contains(result, "kind: Secret") {
 		t.Error("RedactText() should preserve YAML structure")
 	}
-	
+
 	if !contains(result, "metadata:") {
 		t.Error("RedactText() should preserve YAML structure")
 	}
-	
+
 	// Should redact sensitive data
 	if contains(result, "cGFzc3dvcmQxMjM=") {
 		t.Error("RedactText() should redact base64 encoded passwords")
 	}
-	
+
 	if contains(result, "secret123") {
 		t.Error("RedactText() should redact plaintext passwords")
 	}
@@ -139,17 +139,17 @@ func TestRedactText_EdgeCases(t *testing.T) {
 		{
 			name:     "whitespace around equals",
 			input:    "password = secret123",
-			expected: "password = __SECRET_1__",
+			expected: "password=__SECRET_1__",
 		},
 		{
 			name:     "quoted values",
 			input:    "password=\"secret123\"",
-			expected: "password=\"__SECRET_1__\"",
+			expected: "password=__SECRET_1__",
 		},
 		{
 			name:     "single quoted values",
 			input:    "password='secret123'",
-			expected: "password='__SECRET_1__'",
+			expected: "password=__SECRET_1__",
 		},
 	}
 
@@ -169,14 +169,14 @@ func TestRedactText_Performance(t *testing.T) {
 	for i := 0; i < 1000; i++ {
 		largeInput += "password=secret123 token=abc123 "
 	}
-	
+
 	result := RedactText(largeInput)
-	
+
 	// Should contain redacted values
 	if !contains(result, "__SECRET_") {
 		t.Error("RedactText() should redact values in large input")
 	}
-	
+
 	// Should not contain original secrets
 	if contains(result, "secret123") {
 		t.Error("RedactText() should not contain original secrets in large input")

@@ -14,32 +14,32 @@ var (
 	reReadOnlyKubectl         = regexp.MustCompile(`^\s*kubectl\s+(get|describe|logs|top|kustomize|api-resources|version|explain)\b`)
 
 	// Enhanced danger detection patterns
-	reDangerousDelete         = regexp.MustCompile(`delete\s+(all|--all-namespaces|--all)`)
-	reWildcardSelector        = regexp.MustCompile(`-l\s*["']?\*["']?|--selector\s*["']?\*["']?`)
-	reForceDelete             = regexp.MustCompile(`--force|--grace-period=0`)
-	reNamespaceWide           = regexp.MustCompile(`--all-namespaces|-A\b`)
-	reDangerousResourceTypes  = regexp.MustCompile(`\b(node|namespace|persistentvolume|storageclass|clusterrole|clusterrolebinding)\b`)
-	reRecursiveDelete         = regexp.MustCompile(`--cascade\s*=\s*orphan|--cascade\s*=\s*background|--cascade\s*=\s*foreground`)
-	reRootContext             = regexp.MustCompile(`--context\s*=\s*(admin|root|cluster-admin)`)
-	reDeleteWithoutNamespace  = regexp.MustCompile(`^\s*kubectl\s+delete\s+[^-]`)
-	reWildcardResources       = regexp.MustCompile(`\s+\*\s*$|\s+\*\.|\s+all\s*$`)
+	reDangerousDelete        = regexp.MustCompile(`delete\s+(all|--all-namespaces|--all)`)
+	reWildcardSelector       = regexp.MustCompile(`-l\s*["']?\*["']?|--selector\s*["']?\*["']?`)
+	reForceDelete            = regexp.MustCompile(`--force|--grace-period=0`)
+	reNamespaceWide          = regexp.MustCompile(`--all-namespaces|-A\b`)
+	reDangerousResourceTypes = regexp.MustCompile(`\b(node|namespace|persistentvolume|storageclass|clusterrole|clusterrolebinding)\b`)
+	reRecursiveDelete        = regexp.MustCompile(`--cascade\s*=\s*orphan|--cascade\s*=\s*background|--cascade\s*=\s*foreground`)
+	reRootContext            = regexp.MustCompile(`--context\s*=\s*(admin|root|cluster-admin)`)
+	reDeleteWithoutNamespace = regexp.MustCompile(`^\s*kubectl\s+delete\s+[^-]`)
+	reWildcardResources      = regexp.MustCompile(`\s+\*\s*$|\s+\*\.|\s+all\s*$`)
 )
 
 // PreviewCheck is a command we run BEFORE any mutating action.
 type PreviewCheck struct {
-Name string
-Cmd  string
+	Name string
+	Cmd  string
 }
 
 type PreExecPlan struct {
-	Original            string
-	Checks              []PreviewCheck // e.g., helm lint/template, extra sanity
-	FirstRunCommand     string         // typically a --dry-run variant
-	RequireSecondConfirm bool          // after dry-run/lint succeeded, ask again to apply for real
-	RequireTypedConfirm  bool          // for very dangerous commands, require typing "yes"
-	DangerLevel         string         // "low", "medium", "high", "critical"
-	Notes               []string
-	SafetyChecks        []string       // Additional safety validation messages
+	Original             string
+	Checks               []PreviewCheck // e.g., helm lint/template, extra sanity
+	FirstRunCommand      string         // typically a --dry-run variant
+	RequireSecondConfirm bool           // after dry-run/lint succeeded, ask again to apply for real
+	RequireTypedConfirm  bool           // for very dangerous commands, require typing "yes"
+	DangerLevel          string         // "low", "medium", "high", "critical"
+	Notes                []string
+	SafetyChecks         []string // Additional safety validation messages
 }
 
 // BuildPreExecPlan decides the safe preview flow for a command.
@@ -205,26 +205,26 @@ func BuildPreExecPlan(cmd string) PreExecPlan {
 
 // HumanPreview renders a short explanation for the UI preview panel.
 func (p PreExecPlan) HumanPreview() string {
-var b strings.Builder
-fmt.Fprintf(&b, "Pre-exec plan:\n• Original: %s\n", p.Original)
-if len(p.Checks) > 0 {
-fmt.Fprintf(&b, "• Checks:\n")
-for _, ch := range p.Checks {
-fmt.Fprintf(&b, "   - %s: %s\n", ch.Name, ch.Cmd)
-}
-}
-if p.FirstRunCommand != "" && p.FirstRunCommand != p.Original {
-fmt.Fprintf(&b, "• First run (safe): %s\n", p.FirstRunCommand)
-} else {
-fmt.Fprintf(&b, "• First run: %s\n", p.FirstRunCommand)
-}
-if p.RequireSecondConfirm {
-fmt.Fprintf(&b, "• Second confirm required to execute for real.\n")
-}
-for _, n := range p.Notes {
-fmt.Fprintf(&b, "• Note: %s\n", n)
-}
-return b.String()
+	var b strings.Builder
+	fmt.Fprintf(&b, "Pre-exec plan:\n• Original: %s\n", p.Original)
+	if len(p.Checks) > 0 {
+		fmt.Fprintf(&b, "• Checks:\n")
+		for _, ch := range p.Checks {
+			fmt.Fprintf(&b, "   - %s: %s\n", ch.Name, ch.Cmd)
+		}
+	}
+	if p.FirstRunCommand != "" && p.FirstRunCommand != p.Original {
+		fmt.Fprintf(&b, "• First run (safe): %s\n", p.FirstRunCommand)
+	} else {
+		fmt.Fprintf(&b, "• First run: %s\n", p.FirstRunCommand)
+	}
+	if p.RequireSecondConfirm {
+		fmt.Fprintf(&b, "• Second confirm required to execute for real.\n")
+	}
+	for _, n := range p.Notes {
+		fmt.Fprintf(&b, "• Note: %s\n", n)
+	}
+	return b.String()
 }
 
 // analyzeDangerLevel evaluates the overall risk level of a command

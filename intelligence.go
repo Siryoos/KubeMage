@@ -19,21 +19,21 @@ type IntelligenceEngine struct {
 
 // AnalysisSession represents a complete intelligence analysis session
 type AnalysisSession struct {
-	ID           string                 `json:"id"`
-	Timestamp    time.Time              `json:"timestamp"`
-	Context      *KubeContextSummary    `json:"context"`
-	Intent       *IntentRouter          `json:"intent"`
-	RootCause    *RootCauseAnalysis     `json:"root_cause"`
-	Optimization []Recommendation       `json:"optimization"`
-	Confidence   float64                `json:"confidence"`
-	Actions      []IntelligentAction    `json:"actions"`
-	Outcome      string                 `json:"outcome"`
+	ID           string              `json:"id"`
+	Timestamp    time.Time           `json:"timestamp"`
+	Context      *KubeContextSummary `json:"context"`
+	Intent       *IntentRouter       `json:"intent"`
+	RootCause    *RootCauseAnalysis  `json:"root_cause"`
+	Optimization []Recommendation    `json:"optimization"`
+	Confidence   float64             `json:"confidence"`
+	Actions      []IntelligentAction `json:"actions"`
+	Outcome      string              `json:"outcome"`
 }
 
 // IntelligentAction represents a smart, context-aware action
 type IntelligentAction struct {
-	Type        string    `json:"type"`        // "diagnostic", "fix", "optimize", "explain"
-	Priority    int       `json:"priority"`    // 1-10 (10 = highest)
+	Type        string    `json:"type"`     // "diagnostic", "fix", "optimize", "explain"
+	Priority    int       `json:"priority"` // 1-10 (10 = highest)
 	Description string    `json:"description"`
 	Command     string    `json:"command"`
 	Risk        RiskLevel `json:"risk"`
@@ -52,11 +52,11 @@ type RiskLevel struct {
 
 // IntelligentInsight represents a smart observation or recommendation
 type IntelligentInsight struct {
-	Type        string  `json:"type"`        // "pattern", "anomaly", "optimization", "prediction"
-	Title       string  `json:"title"`
-	Description string  `json:"description"`
-	Confidence  float64 `json:"confidence"`
-	Impact      string  `json:"impact"`
+	Type        string   `json:"type"` // "pattern", "anomaly", "optimization", "prediction"
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Confidence  float64  `json:"confidence"`
+	Impact      string   `json:"impact"`
 	Evidence    []string `json:"evidence"`
 	NextSteps   []string `json:"next_steps"`
 }
@@ -458,7 +458,7 @@ func (ie *IntelligenceEngine) calculateOverallConfidence(session *AnalysisSessio
 
 	// Boost confidence if we have optimization recommendations
 	if len(session.Optimization) > 0 {
-		confidence = min(confidence + 0.1, 1.0)
+		confidence = min(confidence+0.1, 1.0)
 	}
 
 	return confidence

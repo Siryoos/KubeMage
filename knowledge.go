@@ -14,14 +14,14 @@ type PlaybookLibrary struct {
 
 // Playbook defines systematic approaches to common Kubernetes issues
 type Playbook struct {
-	Name        string            `json:"name"`
-	Category    string            `json:"category"`
-	Description string            `json:"description"`
-	Triggers    []string          `json:"triggers"`    // Error patterns to match
-	Steps       []PlaybookStep    `json:"steps"`       // Diagnostic commands
-	Heuristics  []string          `json:"heuristics"`  // What to look for
-	NextMoves   []ActionableStep  `json:"next_moves"`  // Suggested actions
-	Confidence  float64           `json:"confidence"`  // Pattern match confidence
+	Name        string           `json:"name"`
+	Category    string           `json:"category"`
+	Description string           `json:"description"`
+	Triggers    []string         `json:"triggers"`   // Error patterns to match
+	Steps       []PlaybookStep   `json:"steps"`      // Diagnostic commands
+	Heuristics  []string         `json:"heuristics"` // What to look for
+	NextMoves   []ActionableStep `json:"next_moves"` // Suggested actions
+	Confidence  float64          `json:"confidence"` // Pattern match confidence
 }
 
 type PlaybookStep struct {
@@ -35,20 +35,20 @@ type PlaybookStep struct {
 type ActionableStep struct {
 	Action      string `json:"action"`
 	Command     string `json:"command"`
-	Risk        string `json:"risk"`        // "low", "medium", "high"
-	Category    string `json:"category"`    // "fix", "investigate", "scale", "rollback"
+	Risk        string `json:"risk"`     // "low", "medium", "high"
+	Category    string `json:"category"` // "fix", "investigate", "scale", "rollback"
 	Description string `json:"description"`
 }
 
 // RootCausePattern defines intelligent pattern recognition
 type RootCausePattern struct {
-	Name         string            `json:"name"`
-	Category     string            `json:"category"`
-	Indicators   []string          `json:"indicators"`   // Text patterns to match
-	Conditions   []ConditionCheck  `json:"conditions"`   // Structural checks
-	Solutions    []Solution        `json:"solutions"`    // Ranked solutions
-	Confidence   float64           `json:"confidence"`   // Detection confidence
-	Severity     string            `json:"severity"`     // "low", "medium", "high", "critical"
+	Name       string           `json:"name"`
+	Category   string           `json:"category"`
+	Indicators []string         `json:"indicators"` // Text patterns to match
+	Conditions []ConditionCheck `json:"conditions"` // Structural checks
+	Solutions  []Solution       `json:"solutions"`  // Ranked solutions
+	Confidence float64          `json:"confidence"` // Detection confidence
+	Severity   string           `json:"severity"`   // "low", "medium", "high", "critical"
 }
 
 type ConditionCheck struct {
@@ -58,24 +58,24 @@ type ConditionCheck struct {
 }
 
 type Solution struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Command     string `json:"command"`
-	Risk        string `json:"risk"`
+	Title         string  `json:"title"`
+	Description   string  `json:"description"`
+	Command       string  `json:"command"`
+	Risk          string  `json:"risk"`
 	Effectiveness float64 `json:"effectiveness"` // 0.0-1.0
 }
 
 // RootCauseAnalysis represents the result of intelligent analysis
 type RootCauseAnalysis struct {
-	RootCause      string              `json:"root_cause"`
-	Confidence     float64             `json:"confidence"`
-	Category       string              `json:"category"`
-	Severity       string              `json:"severity"`
-	Indicators     []string            `json:"indicators"`
-	NextSteps      []ActionableStep    `json:"next_steps"`
-	RelatedIssues  []string            `json:"related_issues"`
-	Timeline       string              `json:"timeline"`        // Expected fix time
-	PreventionTips []string            `json:"prevention_tips"`
+	RootCause      string           `json:"root_cause"`
+	Confidence     float64          `json:"confidence"`
+	Category       string           `json:"category"`
+	Severity       string           `json:"severity"`
+	Indicators     []string         `json:"indicators"`
+	NextSteps      []ActionableStep `json:"next_steps"`
+	RelatedIssues  []string         `json:"related_issues"`
+	Timeline       string           `json:"timeline"` // Expected fix time
+	PreventionTips []string         `json:"prevention_tips"`
 }
 
 // NewPlaybookLibrary creates and initializes the playbook library
@@ -432,12 +432,12 @@ func (pl *PlaybookLibrary) DetectRootCause(observations []string) *RootCauseAnal
 	// Build analysis from best match
 	pattern := pl.patterns[bestPattern]
 	analysis := &RootCauseAnalysis{
-		RootCause:     pattern.Name,
-		Confidence:    min(bestScore/2.0, 1.0), // Normalize confidence
-		Category:      pattern.Category,
-		Severity:      pattern.Severity,
-		Indicators:    indicators[bestPattern],
-		Timeline:      pl.estimateFixTime(pattern),
+		RootCause:      pattern.Name,
+		Confidence:     min(bestScore/2.0, 1.0), // Normalize confidence
+		Category:       pattern.Category,
+		Severity:       pattern.Severity,
+		Indicators:     indicators[bestPattern],
+		Timeline:       pl.estimateFixTime(pattern),
 		PreventionTips: pl.getPreventionTips(pattern),
 	}
 

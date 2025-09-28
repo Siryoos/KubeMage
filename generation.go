@@ -287,11 +287,11 @@ func SaveHelmChart(chartName string, files map[string]string) (string, error) {
 
 // GenerationWorkflow represents a complete generation workflow
 type GenerationWorkflow struct {
-	Type        string // "deployment", "service", "helm-chart"
-	OutputPath  string
+	Type              string // "deployment", "service", "helm-chart"
+	OutputPath        string
 	ValidationResults []*ValidationResult
-	Success     bool
-	Error       error
+	Success           bool
+	Error             error
 }
 
 // RunGenerationWorkflow executes a complete generation workflow with validation

@@ -7,31 +7,31 @@ import (
 
 func TestBuildPreExecPlan(t *testing.T) {
 	testCases := []struct {
-		name                    string
-		cmd                     string
-		expectedFirstRun        string
-		expectedSecondConfirm   bool
-		expectedNotes           []string
-		expectedDangerous       bool
+		name                  string
+		cmd                   string
+		expectedFirstRun      string
+		expectedSecondConfirm bool
+		expectedNotes         []string
+		expectedDangerous     bool
 	}{
 		{
-			name:                    "simple get",
-			cmd:                     "kubectl get pods",
-			expectedFirstRun:        "kubectl get pods",
-			expectedSecondConfirm:   false,
+			name:                  "simple get",
+			cmd:                   "kubectl get pods",
+			expectedFirstRun:      "kubectl get pods",
+			expectedSecondConfirm: false,
 		},
 		{
-			name:                    "dangerous delete",
-			cmd:                     "kubectl delete all --all-namespaces",
-			expectedFirstRun:        "kubectl delete all --all-namespaces --dry-run=client",
-			expectedSecondConfirm:   true,
-			expectedDangerous:       true,
+			name:                  "dangerous delete",
+			cmd:                   "kubectl delete all --all-namespaces",
+			expectedFirstRun:      "kubectl delete all --all-namespaces --dry-run=client",
+			expectedSecondConfirm: true,
+			expectedDangerous:     true,
 		},
 		{
-			name:                    "simple apply",
-			cmd:                     "kubectl apply -f my.yaml",
-			expectedFirstRun:        "kubectl apply -f my.yaml --dry-run=client",
-			expectedSecondConfirm:   true,
+			name:                  "simple apply",
+			cmd:                   "kubectl apply -f my.yaml",
+			expectedFirstRun:      "kubectl apply -f my.yaml --dry-run=client",
+			expectedSecondConfirm: true,
 		},
 	}
 

@@ -25,15 +25,15 @@ type PaletteMatch struct {
 
 // CommandPalette manages the command palette UI
 type CommandPalette struct {
-	theme       *Theme
-	isOpen      bool
-	query       string
-	items       []PaletteItem
-	matches     []PaletteMatch
-	selected    int
-	maxItems    int
-	width       int
-	height      int
+	theme    *Theme
+	isOpen   bool
+	query    string
+	items    []PaletteItem
+	matches  []PaletteMatch
+	selected int
+	maxItems int
+	width    int
+	height   int
 }
 
 // Default palette items

@@ -25,107 +25,107 @@ type FlightRecorder struct {
 
 // SessionRecord captures a complete interaction session
 type SessionRecord struct {
-	ID              string                `json:"id"`
-	Timestamp       time.Time             `json:"timestamp"`
-	UserInput       string                `json:"user_input"`
-	Context         *KubeContextSummary   `json:"context"`
-	IntentRouter    *IntentRouter         `json:"intent_router"`
-	Observations    []ObservationRecord   `json:"observations"`
-	Suggestions     []SuggestionRecord    `json:"suggestions"`
-	UserActions     []UserActionRecord    `json:"user_actions"`
+	ID                string              `json:"id"`
+	Timestamp         time.Time           `json:"timestamp"`
+	UserInput         string              `json:"user_input"`
+	Context           *KubeContextSummary `json:"context"`
+	IntentRouter      *IntentRouter       `json:"intent_router"`
+	Observations      []ObservationRecord `json:"observations"`
+	Suggestions       []SuggestionRecord  `json:"suggestions"`
+	UserActions       []UserActionRecord  `json:"user_actions"`
 	ValidationResults []ValidationRecord  `json:"validation_results"`
-	Outcome         string                `json:"outcome"`           // "success", "failure", "partial"
-	UserSatisfaction int                  `json:"user_satisfaction"` // 1-5 rating
-	Duration        time.Duration         `json:"duration"`
-	ErrorMessages   []string              `json:"error_messages"`
+	Outcome           string              `json:"outcome"`           // "success", "failure", "partial"
+	UserSatisfaction  int                 `json:"user_satisfaction"` // 1-5 rating
+	Duration          time.Duration       `json:"duration"`
+	ErrorMessages     []string            `json:"error_messages"`
 }
 
 type ObservationRecord struct {
-	Command     string    `json:"command"`
-	Output      string    `json:"output"`
-	Error       string    `json:"error"`
-	Timestamp   time.Time `json:"timestamp"`
-	Truncated   bool      `json:"truncated"`
+	Command       string        `json:"command"`
+	Output        string        `json:"output"`
+	Error         string        `json:"error"`
+	Timestamp     time.Time     `json:"timestamp"`
+	Truncated     bool          `json:"truncated"`
 	ExecutionTime time.Duration `json:"execution_time"`
 }
 
 type SuggestionRecord struct {
-	Type        string    `json:"type"`        // "command", "diff", "explanation"
-	Content     string    `json:"content"`
-	Confidence  float64   `json:"confidence"`
-	Risk        string    `json:"risk"`
-	Accepted    bool      `json:"accepted"`
-	Applied     bool      `json:"applied"`
-	Timestamp   time.Time `json:"timestamp"`
+	Type       string    `json:"type"` // "command", "diff", "explanation"
+	Content    string    `json:"content"`
+	Confidence float64   `json:"confidence"`
+	Risk       string    `json:"risk"`
+	Accepted   bool      `json:"accepted"`
+	Applied    bool      `json:"applied"`
+	Timestamp  time.Time `json:"timestamp"`
 }
 
 type UserActionRecord struct {
-	Action      string    `json:"action"`      // "accept", "reject", "modify", "cancel"
-	Target      string    `json:"target"`      // What was acted upon
-	Timestamp   time.Time `json:"timestamp"`
-	ModifiedTo  string    `json:"modified_to"` // If user modified the suggestion
+	Action     string    `json:"action"` // "accept", "reject", "modify", "cancel"
+	Target     string    `json:"target"` // What was acted upon
+	Timestamp  time.Time `json:"timestamp"`
+	ModifiedTo string    `json:"modified_to"` // If user modified the suggestion
 }
 
 type ValidationRecord struct {
-	Command     string    `json:"command"`
-	Result      string    `json:"result"`      // "pass", "fail", "warning"
-	Message     string    `json:"message"`
-	Timestamp   time.Time `json:"timestamp"`
-	Validator   string    `json:"validator"`   // "kubectl", "helm", "custom"
+	Command   string    `json:"command"`
+	Result    string    `json:"result"` // "pass", "fail", "warning"
+	Message   string    `json:"message"`
+	Timestamp time.Time `json:"timestamp"`
+	Validator string    `json:"validator"` // "kubectl", "helm", "custom"
 }
 
 // LearningData aggregates patterns and insights from sessions
 type LearningData struct {
-	IntentAccuracy        map[AgentMode]float64        `json:"intent_accuracy"`
-	CommonPatterns        []PatternLearning            `json:"common_patterns"`
-	SuccessfulSuggestions []SuggestionPattern          `json:"successful_suggestions"`
-	FailurePatterns       []FailurePattern             `json:"failure_patterns"`
-	OptimizationImpact    []OptimizationLearning       `json:"optimization_impact"`
-	UserPreferences       UserPreferenceLearning       `json:"user_preferences"`
-	PerformanceMetrics    PerformanceMetrics           `json:"performance_metrics"`
-	LastUpdated           time.Time                    `json:"last_updated"`
+	IntentAccuracy        map[AgentMode]float64  `json:"intent_accuracy"`
+	CommonPatterns        []PatternLearning      `json:"common_patterns"`
+	SuccessfulSuggestions []SuggestionPattern    `json:"successful_suggestions"`
+	FailurePatterns       []FailurePattern       `json:"failure_patterns"`
+	OptimizationImpact    []OptimizationLearning `json:"optimization_impact"`
+	UserPreferences       UserPreferenceLearning `json:"user_preferences"`
+	PerformanceMetrics    PerformanceMetrics     `json:"performance_metrics"`
+	LastUpdated           time.Time              `json:"last_updated"`
 }
 
 type PatternLearning struct {
-	InputPattern    string    `json:"input_pattern"`
-	ContextPattern  string    `json:"context_pattern"`
-	SuccessfulMode  AgentMode `json:"successful_mode"`
-	Frequency       int       `json:"frequency"`
-	SuccessRate     float64   `json:"success_rate"`
-	AvgConfidence   float64   `json:"avg_confidence"`
+	InputPattern   string    `json:"input_pattern"`
+	ContextPattern string    `json:"context_pattern"`
+	SuccessfulMode AgentMode `json:"successful_mode"`
+	Frequency      int       `json:"frequency"`
+	SuccessRate    float64   `json:"success_rate"`
+	AvgConfidence  float64   `json:"avg_confidence"`
 }
 
 type SuggestionPattern struct {
-	InputType       string  `json:"input_type"`
-	SuggestionType  string  `json:"suggestion_type"`
-	Pattern         string  `json:"pattern"`
-	SuccessRate     float64 `json:"success_rate"`
-	UserAcceptance  float64 `json:"user_acceptance"`
-	AvgConfidence   float64 `json:"avg_confidence"`
+	InputType      string  `json:"input_type"`
+	SuggestionType string  `json:"suggestion_type"`
+	Pattern        string  `json:"pattern"`
+	SuccessRate    float64 `json:"success_rate"`
+	UserAcceptance float64 `json:"user_acceptance"`
+	AvgConfidence  float64 `json:"avg_confidence"`
 }
 
 type FailurePattern struct {
-	ErrorType       string  `json:"error_type"`
-	Context         string  `json:"context"`
-	Frequency       int     `json:"frequency"`
+	ErrorType       string   `json:"error_type"`
+	Context         string   `json:"context"`
+	Frequency       int      `json:"frequency"`
 	CommonCauses    []string `json:"common_causes"`
 	SuccessfulFixes []string `json:"successful_fixes"`
 }
 
 type OptimizationLearning struct {
-	Type            string  `json:"type"`
-	AppliedCount    int     `json:"applied_count"`
-	SuccessRate     float64 `json:"success_rate"`
-	AvgImprovement  float64 `json:"avg_improvement"`
+	Type             string  `json:"type"`
+	AppliedCount     int     `json:"applied_count"`
+	SuccessRate      float64 `json:"success_rate"`
+	AvgImprovement   float64 `json:"avg_improvement"`
 	UserSatisfaction float64 `json:"user_satisfaction"`
 }
 
 type UserPreferenceLearning struct {
-	PreferredModes     map[AgentMode]int `json:"preferred_modes"`
-	RiskTolerance      string            `json:"risk_tolerance"`     // "low", "medium", "high"
-	AutomationLevel    string            `json:"automation_level"`   // "manual", "assisted", "automated"
-	PreferredNamespaces []string         `json:"preferred_namespaces"`
-	CommonCommands     []CommandPattern  `json:"common_commands"`
+	PreferredModes      map[AgentMode]int `json:"preferred_modes"`
+	RiskTolerance       string            `json:"risk_tolerance"`   // "low", "medium", "high"
+	AutomationLevel     string            `json:"automation_level"` // "manual", "assisted", "automated"
+	PreferredNamespaces []string          `json:"preferred_namespaces"`
+	CommonCommands      []CommandPattern  `json:"common_commands"`
 }
 
 type CommandPattern struct {
@@ -135,39 +135,39 @@ type CommandPattern struct {
 }
 
 type PerformanceMetrics struct {
-	AvgResponseTime     time.Duration `json:"avg_response_time"`
-	AvgSessionDuration  time.Duration `json:"avg_session_duration"`
-	CommandAccuracy     float64       `json:"command_accuracy"`
-	DiagnosticAccuracy  float64       `json:"diagnostic_accuracy"`
-	OptimizationUptake  float64       `json:"optimization_uptake"`
+	AvgResponseTime    time.Duration `json:"avg_response_time"`
+	AvgSessionDuration time.Duration `json:"avg_session_duration"`
+	CommandAccuracy    float64       `json:"command_accuracy"`
+	DiagnosticAccuracy float64       `json:"diagnostic_accuracy"`
+	OptimizationUptake float64       `json:"optimization_uptake"`
 }
 
 // TrainingExample represents data suitable for model fine-tuning
 type TrainingExample struct {
-	Input      string            `json:"input"`
-	Context    map[string]string `json:"context"`
-	Output     string            `json:"output"`
-	Quality    float64           `json:"quality"`    // 0.0-1.0 based on user feedback
-	Type       string            `json:"type"`       // "command", "diagnostic", "explanation", etc.
-	Metadata   map[string]interface{} `json:"metadata"`
+	Input    string                 `json:"input"`
+	Context  map[string]string      `json:"context"`
+	Output   string                 `json:"output"`
+	Quality  float64                `json:"quality"` // 0.0-1.0 based on user feedback
+	Type     string                 `json:"type"`    // "command", "diagnostic", "explanation", etc.
+	Metadata map[string]interface{} `json:"metadata"`
 }
 
 // LoRADataset represents a dataset for LoRA fine-tuning
 type LoRADataset struct {
-	Examples    []TrainingExample `json:"examples"`
-	Categories  map[string]int    `json:"categories"`
-	Quality     float64           `json:"quality"`
-	CreatedAt   time.Time         `json:"created_at"`
-	Version     string            `json:"version"`
+	Examples   []TrainingExample `json:"examples"`
+	Categories map[string]int    `json:"categories"`
+	Quality    float64           `json:"quality"`
+	CreatedAt  time.Time         `json:"created_at"`
+	Version    string            `json:"version"`
 }
 
 // NewFlightRecorder creates a new flight recorder instance
 func NewFlightRecorder(storagePath string) *FlightRecorder {
 	return &FlightRecorder{
-		sessions:     make([]SessionRecord, 0),
-		storage:      storagePath,
-		maxSessions:  1000, // Keep last 1000 sessions
-		autoSave:     true,
+		sessions:    make([]SessionRecord, 0),
+		storage:     storagePath,
+		maxSessions: 1000, // Keep last 1000 sessions
+		autoSave:    true,
 		learningData: &LearningData{
 			IntentAccuracy:        make(map[AgentMode]float64),
 			CommonPatterns:        make([]PatternLearning, 0),

@@ -51,10 +51,10 @@ func (f *FactHelper) getCached(key string, fetchFn func() (interface{}, error)) 
 
 // PodsSummary provides phase histogram + top 3 waiting/terminated reasons
 type PodsSummary struct {
-	Phases        map[string]int    `json:"phases"`
-	TopProblems   []ProblemSummary  `json:"top_problems"`
-	TotalPods     int               `json:"total_pods"`
-	HealthyRatio  float64           `json:"healthy_ratio"`
+	Phases       map[string]int   `json:"phases"`
+	TopProblems  []ProblemSummary `json:"top_problems"`
+	TotalPods    int              `json:"total_pods"`
+	HealthyRatio float64          `json:"healthy_ratio"`
 }
 
 type ProblemSummary struct {
@@ -154,14 +154,14 @@ type PodProblemCount struct {
 
 // DeploymentProgress provides replicas/available/unavailable + last event
 type DeploymentProgress struct {
-	Name         string `json:"name"`
-	Replicas     int    `json:"replicas"`
-	Available    int    `json:"available"`
-	Unavailable  int    `json:"unavailable"`
-	Updated      int    `json:"updated"`
-	LastEvent    string `json:"last_event"`
-	Conditions   []string `json:"conditions"`
-	ReadyRatio   float64  `json:"ready_ratio"`
+	Name        string   `json:"name"`
+	Replicas    int      `json:"replicas"`
+	Available   int      `json:"available"`
+	Unavailable int      `json:"unavailable"`
+	Updated     int      `json:"updated"`
+	LastEvent   string   `json:"last_event"`
+	Conditions  []string `json:"conditions"`
+	ReadyRatio  float64  `json:"ready_ratio"`
 }
 
 func (f *FactHelper) DeployProgress(ns, name string) (*DeploymentProgress, error) {
@@ -229,14 +229,14 @@ func (f *FactHelper) fetchDeploymentProgress(ns, name string) (*DeploymentProgre
 
 // ServiceStatus provides type, endpoints count, ingress status
 type ServiceStatus struct {
-	Name           string   `json:"name"`
-	Type           string   `json:"type"`
-	ClusterIP      string   `json:"cluster_ip"`
-	ExternalIP     string   `json:"external_ip"`
-	EndpointsCount int      `json:"endpoints_count"`
-	PortsCount     int      `json:"ports_count"`
-	Selector       string   `json:"selector"`
-	Ready          bool     `json:"ready"`
+	Name           string `json:"name"`
+	Type           string `json:"type"`
+	ClusterIP      string `json:"cluster_ip"`
+	ExternalIP     string `json:"external_ip"`
+	EndpointsCount int    `json:"endpoints_count"`
+	PortsCount     int    `json:"ports_count"`
+	Selector       string `json:"selector"`
+	Ready          bool   `json:"ready"`
 }
 
 func (f *FactHelper) ServiceCheck(ns, name string) (*ServiceStatus, error) {
@@ -348,11 +348,11 @@ func (f *FactHelper) fetchIngressStatus(ns, name string) (*IngressStatus, error)
 
 // ResourceSnapshot provides quota/limitRange + resource hotspots
 type ResourceSnapshot struct {
-	Namespace     string              `json:"namespace"`
-	Quotas        []ResourceQuota     `json:"quotas"`
-	LimitRanges   []LimitRange        `json:"limit_ranges"`
-	HotSpots      []ResourceHotSpot   `json:"hot_spots"`
-	OverallHealth string              `json:"overall_health"`
+	Namespace     string            `json:"namespace"`
+	Quotas        []ResourceQuota   `json:"quotas"`
+	LimitRanges   []LimitRange      `json:"limit_ranges"`
+	HotSpots      []ResourceHotSpot `json:"hot_spots"`
+	OverallHealth string            `json:"overall_health"`
 }
 
 type ResourceQuota struct {
@@ -367,7 +367,7 @@ type LimitRange struct {
 }
 
 type ResourceHotSpot struct {
-	Type        string  `json:"type"` // "cpu", "memory", "storage"
+	Type        string  `json:"type"`     // "cpu", "memory", "storage"
 	Resource    string  `json:"resource"` // pod/deployment name
 	Usage       string  `json:"usage"`
 	Limit       string  `json:"limit"`
@@ -460,11 +460,11 @@ func (f *FactHelper) calculateHealthFromQuotas(quotas []ResourceQuota) string {
 
 // Workspace awareness for charts, templates, and manifests
 type WorkspaceSummary struct {
-	Charts     []ChartInfo     `json:"charts"`
-	Templates  []TemplateInfo  `json:"templates"`
-	Manifests  []ManifestInfo  `json:"manifests"`
-	Values     []ValuesInfo    `json:"values"`
-	LastScan   time.Time       `json:"last_scan"`
+	Charts    []ChartInfo    `json:"charts"`
+	Templates []TemplateInfo `json:"templates"`
+	Manifests []ManifestInfo `json:"manifests"`
+	Values    []ValuesInfo   `json:"values"`
+	LastScan  time.Time      `json:"last_scan"`
 }
 
 type ChartInfo struct {
@@ -491,10 +491,10 @@ type ManifestInfo struct {
 }
 
 type ValuesInfo struct {
-	Path     string                 `json:"path"`
-	Chart    string                 `json:"chart"`
-	Content  map[string]interface{} `json:"content"`
-	Hash     string                 `json:"hash"`
+	Path    string                 `json:"path"`
+	Chart   string                 `json:"chart"`
+	Content map[string]interface{} `json:"content"`
+	Hash    string                 `json:"hash"`
 }
 
 func (f *FactHelper) IndexWorkspace() (*WorkspaceSummary, error) {

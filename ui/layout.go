@@ -35,11 +35,11 @@ type PaneConfig struct {
 
 // LayoutConfig holds the complete layout configuration
 type LayoutConfig struct {
-	Mode     LayoutMode
-	Chat     PaneConfig
-	Preview  PaneConfig
-	Output   PaneConfig
-	Window   struct {
+	Mode    LayoutMode
+	Chat    PaneConfig
+	Preview PaneConfig
+	Output  PaneConfig
+	Window  struct {
 		Width  int
 		Height int
 	}
@@ -51,9 +51,9 @@ type LayoutConfig struct {
 
 // LayoutManager handles layout calculations and transitions
 type LayoutManager struct {
-	config       LayoutConfig
-	theme        *Theme
-	minPaneWidth int
+	config        LayoutConfig
+	theme         *Theme
+	minPaneWidth  int
 	minPaneHeight int
 }
 
@@ -126,10 +126,10 @@ func (lm *LayoutManager) GetConfig() LayoutConfig {
 // calculateContentArea determines the available content area
 func (lm *LayoutManager) calculateContentArea() {
 	// Reserve space for header, input, status bar, etc.
-	headerHeight := 2    // Header and spacing
-	inputHeight := 5     // Input area with borders
-	statusHeight := 1    // Status bar
-	footerHeight := 2    // Footer and spacing
+	headerHeight := 2 // Header and spacing
+	inputHeight := 5  // Input area with borders
+	statusHeight := 1 // Status bar
+	footerHeight := 2 // Footer and spacing
 
 	reservedHeight := headerHeight + inputHeight + statusHeight + footerHeight
 

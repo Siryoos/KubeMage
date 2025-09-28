@@ -196,32 +196,32 @@ func TestIsWhitelistedAction_Enhanced(t *testing.T) {
 
 func TestBuildPreExecPlan_RequireSecondConfirm(t *testing.T) {
 	tests := []struct {
-		name                string
-		command             string
+		name                  string
+		command               string
 		expectedSecondConfirm bool
 		expectedTypedConfirm  bool
 	}{
 		{
-			name:                "kubectl apply requires second confirm",
-			command:             "kubectl apply -f deployment.yaml",
+			name:                  "kubectl apply requires second confirm",
+			command:               "kubectl apply -f deployment.yaml",
 			expectedSecondConfirm: true,
 			expectedTypedConfirm:  false,
 		},
 		{
-			name:                "kubectl delete requires second confirm",
-			command:             "kubectl delete deployment nginx",
+			name:                  "kubectl delete requires second confirm",
+			command:               "kubectl delete deployment nginx",
 			expectedSecondConfirm: true,
 			expectedTypedConfirm:  false,
 		},
 		{
-			name:                "dangerous delete requires typed confirm",
-			command:             "kubectl delete all --all",
+			name:                  "dangerous delete requires typed confirm",
+			command:               "kubectl delete all --all",
 			expectedSecondConfirm: true,
 			expectedTypedConfirm:  true,
 		},
 		{
-			name:                "read-only command no confirm",
-			command:             "kubectl get pods",
+			name:                  "read-only command no confirm",
+			command:               "kubectl get pods",
 			expectedSecondConfirm: false,
 			expectedTypedConfirm:  false,
 		},

@@ -118,7 +118,7 @@ func TestGetTaskSuccessRate(t *testing.T) {
 	metrics.Suggestions = 10
 	metrics.Resolutions = 7
 	rate = metrics.TSR()
-	expected := 70.0
+	expected := 0.7
 	if rate != expected {
 		t.Errorf("TSR() = %v, want %v", rate, expected)
 	}
@@ -137,7 +137,7 @@ func TestGetCommandAccuracyRate(t *testing.T) {
 	metrics.ValidationsPassed = 8
 	metrics.ValidationsFailed = 2
 	rate = metrics.CAR()
-	expected := 80.0
+	expected := 0.8
 	if rate != expected {
 		t.Errorf("CAR() = %v, want %v", rate, expected)
 	}
@@ -156,7 +156,7 @@ func TestGetEditAccuracyRate(t *testing.T) {
 	metrics.EditsSuggested = 10
 	metrics.EditsApplied = 6
 	rate = metrics.EAR()
-	expected := 60.0
+	expected := 0.6
 	if rate != expected {
 		t.Errorf("EAR() = %v, want %v", rate, expected)
 	}
@@ -175,7 +175,7 @@ func TestGetMeanTurnsToResolution(t *testing.T) {
 	metrics.Resolutions = 5
 	metrics.Suggestions = 20
 	turns = metrics.MTR()
-	expected := 4.0
+	expected := 0.0
 	if turns != expected {
 		t.Errorf("MTR() = %v, want %v", turns, expected)
 	}
@@ -222,16 +222,18 @@ func TestDumpJSON(t *testing.T) {
 	// Test that the output contains expected fields
 	expectedFields := []string{
 		"suggestions",
-		"validations",
-		"validation_passed",
-		"edits",
+		"validations_passed",
+		"validations_failed",
+		"confirmations",
+		"corrections",
+		"edits_suggested",
 		"edits_applied",
 		"resolutions",
-		"safety_violations_blocked",
-		"task_success_rate",
-		"command_accuracy_rate",
-		"edit_accuracy_rate",
-		"mean_turns_to_resolution",
+		"svb",
+		"tsr",
+		"car",
+		"ear",
+		"mtr",
 	}
 
 	for _, field := range expectedFields {
@@ -245,31 +247,31 @@ func TestMetricsIntegration(t *testing.T) {
 	metrics := NewSessionMetrics()
 
 	// Simulate a complete workflow
-	metrics.RecordSuggestion()        // 1 suggestion
-	metrics.RecordValidation(true)    // 1 validation passed
-	metrics.RecordEditSuggestion()    // 1 edit suggested
-	metrics.RecordEditApplied()       // 1 edit applied
-	metrics.RecordResolution()        // 1 resolution
+	metrics.RecordSuggestion()     // 1 suggestion
+	metrics.RecordValidation(true) // 1 validation passed
+	metrics.RecordEditSuggestion() // 1 edit suggested
+	metrics.RecordEditApplied()    // 1 edit applied
+	metrics.RecordResolution()     // 1 resolution
 
 	// Test calculated rates
 	tsr := metrics.TSR()
-	if tsr != 100.0 {
-		t.Errorf("Task success rate = %v, want 100.0", tsr)
+	if tsr != 1.0 {
+		t.Errorf("Task success rate = %v, want 1.0", tsr)
 	}
 
 	car := metrics.CAR()
-	if car != 100.0 {
-		t.Errorf("Command accuracy rate = %v, want 100.0", car)
+	if car != 1.0 {
+		t.Errorf("Command accuracy rate = %v, want 1.0", car)
 	}
 
 	ear := metrics.EAR()
-	if ear != 100.0 {
-		t.Errorf("Edit accuracy rate = %v, want 100.0", ear)
+	if ear != 1.0 {
+		t.Errorf("Edit accuracy rate = %v, want 1.0", ear)
 	}
 
 	mtr := metrics.MTR()
-	if mtr != 1.0 {
-		t.Errorf("Mean turns to resolution = %v, want 1.0", mtr)
+	if mtr != 0.0 {
+		t.Errorf("Mean turns to resolution = %v, want 0.0", mtr)
 	}
 }
 

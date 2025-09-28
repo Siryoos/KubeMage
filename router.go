@@ -202,7 +202,7 @@ func calculatePatternScore(input string, pattern IntentPattern) float64 {
 	for _, example := range pattern.Examples {
 		lowerExample := strings.ToLower(example)
 		if strings.Contains(lowerInput, lowerExample) ||
-		   calculateSimilarity(lowerInput, lowerExample) > 0.7 {
+			calculateSimilarity(lowerInput, lowerExample) > 0.7 {
 			score += 0.3
 		}
 	}
@@ -323,44 +323,44 @@ func generateReasoning(input string, mode AgentMode, confidence float64, alterna
 func getPromptPolicy(mode AgentMode) *PromptPolicy {
 	policies := map[AgentMode]*PromptPolicy{
 		ModeDiagnose: {
-			Mode:         ModeDiagnose,
-			SystemPrompt: "You are a Kubernetes diagnostic specialist. Use the ReAct protocol to systematically investigate issues. Always start with the most relevant describe/events/logs commands. Limit to 5 steps maximum. End with 'Final:' and actionable next steps.",
-			Temperature:  0.2,
-			MaxTokens:    1024,
+			Mode:            ModeDiagnose,
+			SystemPrompt:    "You are a Kubernetes diagnostic specialist. Use the ReAct protocol to systematically investigate issues. Always start with the most relevant describe/events/logs commands. Limit to 5 steps maximum. End with 'Final:' and actionable next steps.",
+			Temperature:     0.2,
+			MaxTokens:       1024,
 			ContextStrategy: "surgical", // Use minimal, targeted context
-			SafetyLevel:    "read-only",
+			SafetyLevel:     "read-only",
 		},
 		ModeGenerate: {
-			Mode:         ModeGenerate,
-			SystemPrompt: "You are a Kubernetes resource generator. Create valid, production-ready YAML manifests. Always include resource limits, labels, and annotations. Propose kubectl apply --dry-run commands for validation.",
-			Temperature:  0.3,
-			MaxTokens:    2048,
+			Mode:            ModeGenerate,
+			SystemPrompt:    "You are a Kubernetes resource generator. Create valid, production-ready YAML manifests. Always include resource limits, labels, and annotations. Propose kubectl apply --dry-run commands for validation.",
+			Temperature:     0.3,
+			MaxTokens:       2048,
 			ContextStrategy: "schema-aware", // Include relevant schemas
-			SafetyLevel:    "dry-run-first",
+			SafetyLevel:     "dry-run-first",
 		},
 		ModeEdit: {
-			Mode:         ModeEdit,
-			SystemPrompt: "You are a precision Kubernetes editor. Generate minimal, targeted unified diffs only. Preserve existing structure and comments. Always follow with validation commands.",
-			Temperature:  0.25,
-			MaxTokens:    1024,
+			Mode:            ModeEdit,
+			SystemPrompt:    "You are a precision Kubernetes editor. Generate minimal, targeted unified diffs only. Preserve existing structure and comments. Always follow with validation commands.",
+			Temperature:     0.25,
+			MaxTokens:       1024,
 			ContextStrategy: "diff-focused", // Show current vs desired state
-			SafetyLevel:    "validate-first",
+			SafetyLevel:     "validate-first",
 		},
 		ModeExplain: {
-			Mode:         ModeExplain,
-			SystemPrompt: "You are a Kubernetes educator. Provide concise, accurate explanations with practical examples. Reference current cluster state when relevant. Keep responses under 200 words.",
-			Temperature:  0.4,
-			MaxTokens:    512,
+			Mode:            ModeExplain,
+			SystemPrompt:    "You are a Kubernetes educator. Provide concise, accurate explanations with practical examples. Reference current cluster state when relevant. Keep responses under 200 words.",
+			Temperature:     0.4,
+			MaxTokens:       512,
 			ContextStrategy: "educational", // Include relevant docs/examples
-			SafetyLevel:    "informational",
+			SafetyLevel:     "informational",
 		},
 		ModeCommand: {
-			Mode:         ModeCommand,
-			SystemPrompt: "You are a kubectl/helm command synthesizer. Generate single, executable commands only. Prefer read-only operations. For mutations, always include --dry-run first.",
-			Temperature:  0.2,
-			MaxTokens:    256,
+			Mode:            ModeCommand,
+			SystemPrompt:    "You are a kubectl/helm command synthesizer. Generate single, executable commands only. Prefer read-only operations. For mutations, always include --dry-run first.",
+			Temperature:     0.2,
+			MaxTokens:       256,
 			ContextStrategy: "command-focused", // Minimal context, high precision
-			SafetyLevel:    "prefer-read-only",
+			SafetyLevel:     "prefer-read-only",
 		},
 	}
 
@@ -370,12 +370,12 @@ func getPromptPolicy(mode AgentMode) *PromptPolicy {
 
 	// Default policy
 	return &PromptPolicy{
-		Mode:         mode,
-		SystemPrompt: "You are a helpful Kubernetes assistant.",
-		Temperature:  0.3,
-		MaxTokens:    1024,
+		Mode:            mode,
+		SystemPrompt:    "You are a helpful Kubernetes assistant.",
+		Temperature:     0.3,
+		MaxTokens:       1024,
 		ContextStrategy: "balanced",
-		SafetyLevel:    "standard",
+		SafetyLevel:     "standard",
 	}
 }
 
@@ -455,11 +455,11 @@ func GenerateQuickActions(input string, alternatives []AgentMode, context *KubeC
 
 // RouterMetrics tracks routing performance for learning
 type RouterMetrics struct {
-	TotalRoutes       int                    `json:"total_routes"`
-	ModeDistribution  map[AgentMode]int      `json:"mode_distribution"`
-	ConfidenceAverage float64               `json:"confidence_average"`
-	UserCorrections   map[AgentMode]int      `json:"user_corrections"`
-	LastUpdated       time.Time              `json:"last_updated"`
+	TotalRoutes       int               `json:"total_routes"`
+	ModeDistribution  map[AgentMode]int `json:"mode_distribution"`
+	ConfidenceAverage float64           `json:"confidence_average"`
+	UserCorrections   map[AgentMode]int `json:"user_corrections"`
+	LastUpdated       time.Time         `json:"last_updated"`
 }
 
 // Global router metrics instance

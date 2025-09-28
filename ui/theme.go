@@ -17,29 +17,29 @@ var currentTheme ThemeType = ThemeDark
 // ColorPalette defines the colors for a theme
 type ColorPalette struct {
 	// Text colors
-	Primary     lipgloss.Color
-	Secondary   lipgloss.Color
-	Muted       lipgloss.Color
-	Accent      lipgloss.Color
-	Success     lipgloss.Color
-	Warning     lipgloss.Color
-	Error       lipgloss.Color
-	Info        lipgloss.Color
+	Primary   lipgloss.Color
+	Secondary lipgloss.Color
+	Muted     lipgloss.Color
+	Accent    lipgloss.Color
+	Success   lipgloss.Color
+	Warning   lipgloss.Color
+	Error     lipgloss.Color
+	Info      lipgloss.Color
 
 	// Background colors
-	Background  lipgloss.Color
-	Surface     lipgloss.Color
-	Overlay     lipgloss.Color
+	Background lipgloss.Color
+	Surface    lipgloss.Color
+	Overlay    lipgloss.Color
 
 	// Border colors
 	Border      lipgloss.Color
 	BorderFocus lipgloss.Color
 
 	// Semantic colors
-	User        lipgloss.Color
-	Assistant   lipgloss.Color
-	System      lipgloss.Color
-	Exec        lipgloss.Color
+	User      lipgloss.Color
+	Assistant lipgloss.Color
+	System    lipgloss.Color
+	Exec      lipgloss.Color
 
 	// Risk level colors
 	RiskLow      lipgloss.Color
@@ -53,10 +53,10 @@ type ColorPalette struct {
 	DiffContext lipgloss.Color
 
 	// Syntax highlighting
-	Keyword     lipgloss.Color
-	String      lipgloss.Color
-	Number      lipgloss.Color
-	Comment     lipgloss.Color
+	Keyword lipgloss.Color
+	String  lipgloss.Color
+	Number  lipgloss.Color
+	Comment lipgloss.Color
 }
 
 // Theme contains all styling information for the UI
@@ -76,26 +76,26 @@ type Theme struct {
 
 // Dark theme palette - WCAG AA compliant
 var darkPalette = ColorPalette{
-	Primary:     lipgloss.Color("255"), // White
-	Secondary:   lipgloss.Color("245"), // Light gray
-	Muted:       lipgloss.Color("244"), // Medium gray
-	Accent:      lipgloss.Color("75"),  // Cyan
-	Success:     lipgloss.Color("82"),  // Green
-	Warning:     lipgloss.Color("220"), // Yellow
-	Error:       lipgloss.Color("196"), // Red
-	Info:        lipgloss.Color("75"),  // Cyan
+	Primary:   lipgloss.Color("255"), // White
+	Secondary: lipgloss.Color("245"), // Light gray
+	Muted:     lipgloss.Color("244"), // Medium gray
+	Accent:    lipgloss.Color("75"),  // Cyan
+	Success:   lipgloss.Color("82"),  // Green
+	Warning:   lipgloss.Color("220"), // Yellow
+	Error:     lipgloss.Color("196"), // Red
+	Info:      lipgloss.Color("75"),  // Cyan
 
-	Background:  lipgloss.Color("0"),   // Black
-	Surface:     lipgloss.Color("236"), // Dark gray
-	Overlay:     lipgloss.Color("240"), // Medium dark gray
+	Background: lipgloss.Color("0"),   // Black
+	Surface:    lipgloss.Color("236"), // Dark gray
+	Overlay:    lipgloss.Color("240"), // Medium dark gray
 
-	Border:      lipgloss.Color("96"),  // Light blue-gray
-	BorderFocus: lipgloss.Color("75"),  // Cyan
+	Border:      lipgloss.Color("96"), // Light blue-gray
+	BorderFocus: lipgloss.Color("75"), // Cyan
 
-	User:        lipgloss.Color("63"),  // Blue
-	Assistant:   lipgloss.Color("82"),  // Green
-	System:      lipgloss.Color("240"), // Gray
-	Exec:        lipgloss.Color("220"), // Yellow
+	User:      lipgloss.Color("63"),  // Blue
+	Assistant: lipgloss.Color("82"),  // Green
+	System:    lipgloss.Color("240"), // Gray
+	Exec:      lipgloss.Color("220"), // Yellow
 
 	RiskLow:      lipgloss.Color("82"),  // Green
 	RiskMedium:   lipgloss.Color("220"), // Yellow
@@ -107,34 +107,34 @@ var darkPalette = ColorPalette{
 	DiffRemoved: lipgloss.Color("52"),  // Dark red background
 	DiffContext: lipgloss.Color("244"), // Gray
 
-	Keyword:     lipgloss.Color("178"), // Orange
-	String:      lipgloss.Color("114"), // Light green
-	Number:      lipgloss.Color("99"),  // Purple
-	Comment:     lipgloss.Color("244"), // Gray
+	Keyword: lipgloss.Color("178"), // Orange
+	String:  lipgloss.Color("114"), // Light green
+	Number:  lipgloss.Color("99"),  // Purple
+	Comment: lipgloss.Color("244"), // Gray
 }
 
 // Light theme palette - Solarized-inspired, WCAG AA compliant
 var lightPalette = ColorPalette{
-	Primary:     lipgloss.Color("235"), // Dark gray
-	Secondary:   lipgloss.Color("240"), // Medium gray
-	Muted:       lipgloss.Color("244"), // Light gray
-	Accent:      lipgloss.Color("33"),  // Blue
-	Success:     lipgloss.Color("28"),  // Dark green
-	Warning:     lipgloss.Color("166"), // Orange
-	Error:       lipgloss.Color("160"), // Dark red
-	Info:        lipgloss.Color("33"),  // Blue
+	Primary:   lipgloss.Color("235"), // Dark gray
+	Secondary: lipgloss.Color("240"), // Medium gray
+	Muted:     lipgloss.Color("244"), // Light gray
+	Accent:    lipgloss.Color("33"),  // Blue
+	Success:   lipgloss.Color("28"),  // Dark green
+	Warning:   lipgloss.Color("166"), // Orange
+	Error:     lipgloss.Color("160"), // Dark red
+	Info:      lipgloss.Color("33"),  // Blue
 
-	Background:  lipgloss.Color("253"), // Off-white
-	Surface:     lipgloss.Color("254"), // Light gray
-	Overlay:     lipgloss.Color("250"), // Medium light gray
+	Background: lipgloss.Color("253"), // Off-white
+	Surface:    lipgloss.Color("254"), // Light gray
+	Overlay:    lipgloss.Color("250"), // Medium light gray
 
 	Border:      lipgloss.Color("248"), // Light gray
 	BorderFocus: lipgloss.Color("33"),  // Blue
 
-	User:        lipgloss.Color("33"),  // Blue
-	Assistant:   lipgloss.Color("28"),  // Dark green
-	System:      lipgloss.Color("244"), // Gray
-	Exec:        lipgloss.Color("166"), // Orange
+	User:      lipgloss.Color("33"),  // Blue
+	Assistant: lipgloss.Color("28"),  // Dark green
+	System:    lipgloss.Color("244"), // Gray
+	Exec:      lipgloss.Color("166"), // Orange
 
 	RiskLow:      lipgloss.Color("28"),  // Dark green
 	RiskMedium:   lipgloss.Color("166"), // Orange
@@ -146,10 +146,10 @@ var lightPalette = ColorPalette{
 	DiffRemoved: lipgloss.Color("224"), // Light red background
 	DiffContext: lipgloss.Color("250"), // Light gray
 
-	Keyword:     lipgloss.Color("166"), // Orange
-	String:      lipgloss.Color("64"),  // Green
-	Number:      lipgloss.Color("125"), // Purple
-	Comment:     lipgloss.Color("244"), // Gray
+	Keyword: lipgloss.Color("166"), // Orange
+	String:  lipgloss.Color("64"),  // Green
+	Number:  lipgloss.Color("125"), // Purple
+	Comment: lipgloss.Color("244"), // Gray
 }
 
 // Current theme instance

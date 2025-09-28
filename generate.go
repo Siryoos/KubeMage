@@ -10,24 +10,24 @@ import (
 
 // GenerationResult represents the result of a generation operation
 type GenerationResult struct {
-	Type        string   // "k8s" or "helm"
-	Name        string   // Resource/chart name
-	Files       []GeneratedFile
-	OutputDir   string   // Where files were saved
-	Validation  []string // Validation command results
+	Type       string // "k8s" or "helm"
+	Name       string // Resource/chart name
+	Files      []GeneratedFile
+	OutputDir  string   // Where files were saved
+	Validation []string // Validation command results
 }
 
 type GeneratedFile struct {
-	Path     string // Relative path
-	Content  string // File content
-	Saved    bool   // Whether successfully saved
+	Path    string // Relative path
+	Content string // File content
+	Saved   bool   // Whether successfully saved
 }
 
 // SaveGeneratedContent saves generated content to files and runs validation
 func SaveGeneratedContent(content, genType, name string) (*GenerationResult, error) {
 	result := &GenerationResult{
-		Type: genType,
-		Name: name,
+		Type:      genType,
+		Name:      name,
 		OutputDir: "./out",
 	}
 

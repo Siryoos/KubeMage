@@ -13,7 +13,7 @@ import (
 
 // OllamaService implements OllamaClient interface
 type OllamaService struct {
-	client *http.Client
+	client  *http.Client
 	baseURL string
 }
 

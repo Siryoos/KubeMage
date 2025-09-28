@@ -189,21 +189,20 @@ type ResponseProcessor interface {
 	ProcessAgentResponse(response string) (string, error)
 }
 
-
 // CommandResult represents the result of a command execution
 type CommandResult struct {
-	Command   string `json:"command"`
-	Output    string `json:"output"`
-	Error     string `json:"error,omitempty"`
-	ExitCode  int    `json:"exit_code"`
-	Duration  time.Duration `json:"duration"`
+	Command  string        `json:"command"`
+	Output   string        `json:"output"`
+	Error    string        `json:"error,omitempty"`
+	ExitCode int           `json:"exit_code"`
+	Duration time.Duration `json:"duration"`
 }
 
 // AnalysisResult represents the result of an analysis operation
 type AnalysisResult struct {
-	SessionID string                 `json:"session_id"`
-	Findings  []string               `json:"findings"`
-	Actions   []IntelligentAction    `json:"actions"`
-	Confidence float64               `json:"confidence"`
-	Timestamp time.Time              `json:"timestamp"`
+	SessionID  string              `json:"session_id"`
+	Findings   []string            `json:"findings"`
+	Actions    []IntelligentAction `json:"actions"`
+	Confidence float64             `json:"confidence"`
+	Timestamp  time.Time           `json:"timestamp"`
 }
