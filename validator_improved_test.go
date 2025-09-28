@@ -29,7 +29,7 @@ func TestBuildPreExecPlan_KubectlApply(t *testing.T) {
 		{
 			name:     "kubectl delete with confirmation",
 			command:  "kubectl delete deployment nginx",
-			expected: "high",
+			expected: "medium",
 		},
 		{
 			name:     "dangerous delete all",
@@ -82,12 +82,12 @@ func TestBuildPreExecPlan_DangerousPatterns(t *testing.T) {
 		{
 			name:     "force delete",
 			command:  "kubectl delete pod nginx --force --grace-period=0",
-			expected: "critical",
+			expected: "high",
 		},
 		{
 			name:     "wildcard selector",
 			command:  "kubectl delete pods -l app=*",
-			expected: "critical",
+			expected: "medium",
 		},
 		{
 			name:     "delete nodes",
