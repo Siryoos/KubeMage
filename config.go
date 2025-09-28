@@ -10,12 +10,35 @@ import (
 )
 
 type ModelSettings struct {
-	Chat       string `yaml:"chat"`
-	Generation string `yaml:"generation"`
+	Chat       string  `yaml:"chat"`
+	Generation string  `yaml:"generation"`
+	Temperature float64 `yaml:"temperature"`
+	TopP       float64  `yaml:"top_p"`
+	RepeatPenalty float64 `yaml:"repeat_penalty"`
 }
 
 type TruncationSettings struct {
 	Message int `yaml:"message"`
+	Logs    int `yaml:"logs"`
+}
+
+type IntelligenceSettings struct {
+	Enabled              bool    `yaml:"enabled"`
+	ContextCacheTTL      int     `yaml:"context_cache_ttl"`      // seconds
+	ConfidenceThreshold  float64 `yaml:"confidence_threshold"`   // 0.0-1.0
+	AutoOptimization     bool    `yaml:"auto_optimization"`
+	LearningEnabled      bool    `yaml:"learning_enabled"`
+	PlaybooksEnabled     bool    `yaml:"playbooks_enabled"`
+	RiskAssessment       bool    `yaml:"risk_assessment"`
+	QuickActionsEnabled  bool    `yaml:"quick_actions_enabled"`
+}
+
+type PerformanceSettings struct {
+	MaxConcurrent     int `yaml:"max_concurrent"`      // Max concurrent operations
+	CommandTimeout    int `yaml:"command_timeout"`     // seconds
+	ResponseTimeout   int `yaml:"response_timeout"`    // seconds
+	RenderThrottle    int `yaml:"render_throttle"`     // milliseconds
+	MemoryLimit       int `yaml:"memory_limit"`        // MB
 }
 
 type legacyPreferences struct {
@@ -23,13 +46,15 @@ type legacyPreferences struct {
 }
 
 type AppConfig struct {
-	Models        ModelSettings      `yaml:"models"`
-	NumCtx        int                `yaml:"num_ctx"`
-	KeepAlive     string             `yaml:"keep_alive"`
-	Truncation    TruncationSettings `yaml:"truncation"`
-	Theme         string             `yaml:"theme"`
-	HistoryLength int                `yaml:"history_length"`
-	OllamaHost    string             `yaml:"ollama_host,omitempty"`
+	Models        ModelSettings        `yaml:"models"`
+	NumCtx        int                  `yaml:"num_ctx"`
+	KeepAlive     string               `yaml:"keep_alive"`
+	Truncation    TruncationSettings   `yaml:"truncation"`
+	Intelligence  IntelligenceSettings `yaml:"intelligence"`
+	Performance   PerformanceSettings  `yaml:"performance"`
+	Theme         string               `yaml:"theme"`
+	HistoryLength int                  `yaml:"history_length"`
+	OllamaHost    string               `yaml:"ollama_host,omitempty"`
 
 	LegacyModel       string             `yaml:"model,omitempty"`
 	LegacyTruncation  int                `yaml:"truncation_size,omitempty"`
@@ -40,12 +65,35 @@ type AppConfig struct {
 func DefaultConfig() *AppConfig {
 	return &AppConfig{
 		Models: ModelSettings{
-			Chat:       "llama3.1:8b",
-			Generation: "llama3.1:13b",
+			Chat:          "llama3.1:8b",
+			Generation:    "llama3.1:13b",
+			Temperature:   0.25,
+			TopP:          0.9,
+			RepeatPenalty: 1.1,
 		},
-		NumCtx:        4096,
-		KeepAlive:     "5m",
-		Truncation:    TruncationSettings{Message: 1200},
+		NumCtx:    12288, // Increased for intelligence features
+		KeepAlive: "30m", // Longer for learning sessions
+		Truncation: TruncationSettings{
+			Message: 1200,
+			Logs:    200,
+		},
+		Intelligence: IntelligenceSettings{
+			Enabled:              true,
+			ContextCacheTTL:      30,   // 30 seconds
+			ConfidenceThreshold:  0.7,  // 70% confidence threshold
+			AutoOptimization:     false, // User approval required
+			LearningEnabled:      true,
+			PlaybooksEnabled:     true,
+			RiskAssessment:       true,
+			QuickActionsEnabled:  true,
+		},
+		Performance: PerformanceSettings{
+			MaxConcurrent:   3,     // 3 concurrent operations
+			CommandTimeout:  8,     // 8 seconds for commands
+			ResponseTimeout: 120,   // 2 minutes for LLM responses
+			RenderThrottle:  40,    // 40ms render throttle
+			MemoryLimit:     512,   // 512MB memory limit
+		},
 		Theme:         "default",
 		HistoryLength: 10,
 		OllamaHost:    defaultOllamaEndpoint,
