@@ -38,7 +38,7 @@ type tagList struct {
 }
 
 const (
-	defaultModelName          = "deepseek-r1:8b"
+	defaultModelName          = "llama3.1:8b"
 	defaultOllamaEndpoint     = "http://localhost:11434"
 	commandOnlySystemPrompt   = "You are KubeMage, an AI assistant that translates natural language into precise kubectl or helm commands. Always respond with a single command string that can be run as-is. Do not include explanations, markdown, backticks, or additional text. Favor read-only or --dry-run variations when the user intent is ambiguous."
 	chatAssistantSystemPrompt = "You are KubeMage, an AI assistant helping with Kubernetes and Helm. Translate user intent into safe kubectl/helm guidance. Answer with short explanations tailored to the cluster context, then conclude with a fenced ```bash code block containing exactly one command that fulfills the request (prefer read-only or --dry-run first when risky). Warn the user about destructive actions and never assume consent."

@@ -23,18 +23,18 @@ RenderedOneLiner  string            `json:"-"`
 }
 
 func runKubectl(timeout time.Duration, args ...string) (string, string, error) {
-ctx, cancel := context.WithTimeout(context.Background(), timeout)
-defer cancel()
-cmd := exec.CommandContext(ctx, "kubectl", args...)
-out, err := cmd.CombinedOutput()
-if ctx.Err() == context.DeadlineExceeded {
-return "", "", fmt.Errorf("kubectl %v timed out after %s", strings.Join(args, " "), timeout)
-}
-if err != nil {
-// return both streams via CombinedOutput; stderr isn't separate here.
-return "", string(out), err
-}
-return string(out), "", nil
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "kubectl", args...)
+	out, err := cmd.CombinedOutput()
+	if ctx.Err() == context.DeadlineExceeded {
+		return "", "", fmt.Errorf("kubectl %v timed out after %s", strings.Join(args, " "), timeout)
+	}
+	if err != nil {
+		// return both streams via CombinedOutput; stderr isn't separate here.
+		return "", string(out), fmt.Errorf("kubectl %v failed: %w", strings.Join(args, " "), err)
+	}
+	return string(out), "", nil
 }
 
 func GetCurrentContext() (string, error) {

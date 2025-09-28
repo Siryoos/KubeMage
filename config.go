@@ -148,8 +148,12 @@ func (cfg *AppConfig) applyDefaults() {
 func LoadConfig() (*AppConfig, error) {
 	f, err := os.Open("config.yaml")
 	if err != nil {
-		cfg := DefaultConfig()
-		return cfg, nil
+		if os.IsNotExist(err) {
+			// Config file doesn't exist, return default config
+			cfg := DefaultConfig()
+			return cfg, nil
+		}
+		return nil, fmt.Errorf("failed to open config.yaml: %w", err)
 	}
 	defer f.Close()
 

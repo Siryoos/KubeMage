@@ -58,6 +58,8 @@ func main() {
 
 	cfg, err := LoadConfig()
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: failed to load config: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Using default configuration.\n")
 		cfg = DefaultConfig()
 	}
 	SetActiveConfig(cfg)

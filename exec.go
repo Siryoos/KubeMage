@@ -85,7 +85,7 @@ func execCmdWithTimeout(command string, timeout time.Duration, p *tea.Program) t
 		}
 
 		if err := cmd.Start(); err != nil {
-			return execDoneMsg{cmd: command, err: fmt.Errorf("error starting command: %w", err)}
+			return execDoneMsg{cmd: command, err: fmt.Errorf("error starting command '%s': %w", command, err)}
 		}
 
 		var stderrOutput strings.Builder

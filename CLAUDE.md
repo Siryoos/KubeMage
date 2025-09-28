@@ -96,7 +96,7 @@ make run
 go run . --query "list failing pods" --metrics
 
 # TUI mode with specific model
-go run . --model deepseek-r1:8b
+go run . --model llama3.1:8b
 ```
 
 ## Testing Strategy
