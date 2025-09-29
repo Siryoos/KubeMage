@@ -9,6 +9,10 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/siryoos/kubemage/internal/engine/validator"
+	"github.com/siryoos/kubemage/internal/execx"
+	"github.com/siryoos/kubemage/internal/llm"
+	"github.com/siryoos/kubemage/internal/metrics"
 )
 
 // OllamaService implements OllamaClient interface
@@ -25,7 +29,7 @@ func NewOllamaService() *OllamaService {
 }
 
 func (s *OllamaService) GenerateCommand(prompt, model string) (string, error) {
-	return GenerateCommand(prompt, model)
+	return llm.GenerateCommand(prompt, model)
 }
 
 func (s *OllamaService) StreamResponse(prompt, systemPrompt, model string) tea.Cmd {

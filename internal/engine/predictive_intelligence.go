@@ -675,5 +675,4 @@ func (pe *PredictiveEngine) triggerPreload(input string, context *KubeContextSum
 
 // min and max functions are now defined in types.go
 
-// Global predictive engine instance
-var GlobalPredictiveEngine = NewPredictiveEngine()
+// Removed global instance - now created via dependency injection

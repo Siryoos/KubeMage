@@ -422,8 +422,7 @@ func (pl *PatternLearner) createClusterPattern(context *KubeContextSummary, acti
 	}
 }
 
-// Global predictive intelligence engine instance
-var PredictiveIntelligence *PredictiveIntelligenceEngine
+// Removed global instance - now created via dependency injection
 
 // InitializePredictiveIntelligence initializes the global predictive intelligence engine
 func InitializePredictiveIntelligence(smartCache *SmartCache, streamingManager *StreamingIntelligenceManager) {

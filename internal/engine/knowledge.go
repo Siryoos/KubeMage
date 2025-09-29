@@ -575,8 +575,7 @@ func (pl *PlaybookLibrary) getPreventionTips(pattern *RootCausePattern) []string
 	return []string{"Follow Kubernetes best practices", "Test changes in non-production first"}
 }
 
-// Global knowledge library instance
-var Knowledge = NewPlaybookLibrary()
+// Removed global instance - now created via dependency injection
 
 // math helper function
 // min function is now defined in types.go

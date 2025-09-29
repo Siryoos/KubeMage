@@ -11,7 +11,7 @@ type PredictiveIntelligenceEngine struct {
 	patternLearner      *PatternLearner
 	contextPredictor    *ContextPredictor
 	behaviorAnalyzer    *BehaviorAnalyzer
-	smartCache          *SmartCache
+	smartCache          *SmartCacheSystem
 	streamingManager    *StreamingIntelligenceManager
 	confidenceThreshold float64
 	learningRate        float64

@@ -595,5 +595,4 @@ func (f *FactHelper) parseManifest(path string) *ManifestInfo {
 	}
 }
 
-// Global fact helper instance
-var Facts = NewFactHelper()
+// Removed global instance - now created via dependency injection

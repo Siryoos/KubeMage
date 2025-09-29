@@ -751,8 +751,7 @@ func (ie *IntelligenceEngine) WarmupCache(context *KubeContextSummary) {
 	}
 }
 
-// Global intelligence engine instance
-var Intelligence = NewIntelligenceEngine()
+// Removed global instance - now created via dependency injection
 
 // Enhanced intelligence analysis with predictive capabilities
 func (ie *IntelligenceEngine) AnalyzeIntelligentlyWithPrediction(input string, context *KubeContextSummary) (*AnalysisSession, error) {

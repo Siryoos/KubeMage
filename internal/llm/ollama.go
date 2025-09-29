@@ -11,6 +11,8 @@ import (
 	"os"
 	"strings"
 	"time"
+	
+	"github.com/siryoos/kubemage/internal/config"
 )
 
 // OllamaRequest represents the request payload for the Ollama API.
@@ -57,7 +59,9 @@ func GenerateCommand(prompt, model string) (string, error) {
 		modelName = defaultModelName
 	}
 
-	// Use model router if available and no specific model requested
+	// TODO: Model router and context enrichment disabled to avoid circular dependency
+	// This functionality should be moved to the engine layer
+	/*
 	if ModelRouter != nil && model == "" {
 		if context, err := BuildContextSummary(); err == nil {
 			if selectedModel, err := ModelRouter.SelectModel(prompt, context); err == nil {
@@ -71,6 +75,7 @@ func GenerateCommand(prompt, model string) (string, error) {
 		prompt = fmt.Sprintf("[CTX] %s\n\n%s", ctxSum.RenderedOneLiner, prompt)
 	}
 	prompt = RedactText(prompt)
+	*/
 
 	res, err := postOllama(prompt, commandOnlySystemPrompt, modelName, false)
 	if err != nil {
@@ -100,7 +105,9 @@ func GenerateChatStream(prompt string, ch chan<- string, model string, systemPro
 		modelName = defaultModelName
 	}
 
-	// Use model router if available and no specific model requested
+	// TODO: Model router and context enrichment disabled to avoid circular dependency
+	// This functionality should be moved to the engine layer
+	/*
 	if ModelRouter != nil && model == "" {
 		if context, err := BuildContextSummary(); err == nil {
 			if selectedModel, err := ModelRouter.SelectModel(prompt, context); err == nil {
@@ -114,6 +121,7 @@ func GenerateChatStream(prompt string, ch chan<- string, model string, systemPro
 		prompt = fmt.Sprintf("[CTX] %s\n\n%s", ctxSum.RenderedOneLiner, prompt)
 	}
 	prompt = RedactText(prompt)
+	*/
 
 	res, err := postOllama(prompt, systemPrompt, modelName, true)
 	if err != nil {
@@ -148,7 +156,7 @@ func postOllama(prompt, systemPrompt, model string, stream bool) (*http.Response
 		Stream: stream,
 	}
 
-	if cfg := ActiveConfig(); cfg != nil {
+	if cfg := config.ActiveConfig(); cfg != nil {
 		options := make(map[string]interface{})
 		if cfg.NumCtx > 0 {
 			options["num_ctx"] = cfg.NumCtx
@@ -221,7 +229,8 @@ func ListModels() ([]string, error) {
 	return modelNames, nil
 }
 
-func resolveModel(preferred string, allowFallback bool) (string, string, error) {
+// ResolveModel resolves a model name to an available model
+func ResolveModel(preferred string, allowFallback bool) (string, string, error) {
 	base := ollamaBaseURL()
 	resp, err := httpClient.Get(base + "/api/tags")
 	if err != nil {

@@ -54,7 +54,7 @@ type NetworkOptimizer struct {
 
 // CacheOptimizer optimizes cache performance
 type CacheOptimizer struct {
-	smartCache       *SmartCache
+	smartCache       *SmartCacheSystem
 	evictionStrategy EvictionStrategy
 	prefetchEnabled  bool
 	compressionRatio float64
@@ -655,8 +655,7 @@ func (po *PerformanceOptimizer) GetPerformanceStats() map[string]interface{} {
 // Helper functions
 // min and max functions are now defined in types.go
 
-// Global performance optimizer instance
-var GlobalPerformanceOptimizer *PerformanceOptimizer
+// Removed global instance - now created via dependency injection
 
 // InitializePerformanceOptimizer initializes the global performance optimizer
 func InitializePerformanceOptimizer() {

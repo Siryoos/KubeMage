@@ -857,8 +857,7 @@ func (rtpm *RealTimePerformanceMonitor) GetPerformanceStats() map[string]interfa
 	}
 }
 
-// Global real-time performance monitor instance
-var RealTimeMonitor *RealTimePerformanceMonitor
+// Removed global instance - now created via dependency injection
 
 // InitializeRealTimePerformanceMonitor initializes the global performance monitor
 func InitializeRealTimePerformanceMonitor() {

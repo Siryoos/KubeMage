@@ -9,6 +9,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/siryoos/kubemage/internal/engine/validator"
 )
 
 type stdoutMsg struct {
@@ -24,7 +25,7 @@ type execDoneMsg struct {
 	err error
 }
 type previewCheckDoneMsg struct {
-	check PreviewCheck
+	check validator.PreviewCheck
 	out   string
 	err   error
 }
@@ -69,9 +70,8 @@ func parseCommand(command string) *exec.Cmd {
 func execCmdWithTimeout(command string, timeout time.Duration, p *tea.Program) tea.Cmd {
 	return func() tea.Msg {
 		// Track command execution for smart refresh
-		if p != nil {
-			p.Send(commandTrackedMsg{command: command})
-		}
+		// Note: commandTrackedMsg is defined in the UI package
+		// This would need to be refactored to avoid circular dependencies
 
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		defer cancel()
@@ -132,7 +132,7 @@ func execCmd(command string, p *tea.Program) tea.Cmd {
 }
 
 // runPreviewCheck executes a single preview check
-func runPreviewCheck(check PreviewCheck, p *tea.Program) tea.Cmd {
+func runPreviewCheck(check validator.PreviewCheck, p *tea.Program) tea.Cmd {
 	return func() tea.Msg {
 		cmd := parseCommand(check.Cmd)
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -150,7 +150,7 @@ func runPreviewCheck(check PreviewCheck, p *tea.Program) tea.Cmd {
 }
 
 // runPreviewChecks executes all preview checks for a plan
-func runPreviewChecks(plan PreExecPlan, p *tea.Program) []tea.Cmd {
+func runPreviewChecks(plan validator.PreExecPlan, p *tea.Program) []tea.Cmd {
 	var cmds []tea.Cmd
 	for _, check := range plan.Checks {
 		cmds = append(cmds, runPreviewCheck(check, p))

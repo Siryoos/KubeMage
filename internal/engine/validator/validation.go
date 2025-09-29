@@ -426,10 +426,9 @@ func (vp *ValidationPipeline) CheckToolAvailability() map[string]bool {
 	return tools
 }
 
-// Global validation pipeline instance
-var ValidationPipe *ValidationPipeline
+// Removed global instance - now created via dependency injection
 
-// InitializeValidation initializes the global validation pipeline
-func InitializeValidation() {
-	ValidationPipe = NewValidationPipeline()
+// InitializeValidation initializes the validation pipeline (deprecated - use NewValidationPipeline directly)
+func InitializeValidation() *ValidationPipeline {
+	return NewValidationPipeline()
 }

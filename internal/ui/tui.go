@@ -16,6 +16,7 @@ import (
 	"github.com/siryoos/kubemage/internal/engine"
 	"github.com/siryoos/kubemage/internal/engine/validator"
 	"github.com/siryoos/kubemage/internal/execx"
+	"github.com/siryoos/kubemage/internal/llm"
 	"github.com/siryoos/kubemage/internal/metrics"
 )
 
@@ -293,7 +294,7 @@ type model struct {
 	intelligenceSubscriber *StreamSubscriber
 }
 
-func InitialModel(defaultModel string, cfg *Config, dumpMetrics bool) *model {
+func InitialModel(defaultModel string, cfg *config.Config, dumpMetrics bool) *model {
 	ta := textarea.New()
 	ta.Placeholder = "Ask KubeMage a question..."
 	ta.Prompt = "❯ "
@@ -317,7 +318,7 @@ func InitialModel(defaultModel string, cfg *Config, dumpMetrics bool) *model {
 
 	selectedModel := modelName
 	statusMessage := ""
-	if resolved, status, err := resolveModel(modelName, true); err != nil {
+	if resolved, status, err := llm.ResolveModel(modelName, true); err != nil {
 		statusMessage = fmt.Sprintf("⚠️ %s", err.Error())
 		selectedModel = modelName
 	} else {
@@ -346,7 +347,7 @@ func InitialModel(defaultModel string, cfg *Config, dumpMetrics bool) *model {
 		stderrContent:       make(map[string]string),
 		previewCheckResults: make(map[string]previewCheckDoneMsg),
 		config:              cfg,
-		metrics:             NewSessionMetrics(),
+		metrics:             metrics.NewSessionMetrics(),
 		dumpMetrics:         dumpMetrics,
 		metricsFlushed:      false,
 		layout:              layoutThreePane,
@@ -976,7 +977,7 @@ Please be specific and actionable in your recommendations.`, pod, ns, diagnostic
 						}
 						m.messages = append(m.messages, message{sender: systemSender, content: fmt.Sprintf("Generation model set to %s", modelName)})
 					} else {
-						resolved, status, err := resolveModel(modelName, true)
+						resolved, status, err := llm.ResolveModel(modelName, true)
 						if err != nil {
 							m.messages = append(m.messages, message{sender: systemSender, content: fmt.Sprintf("Error selecting model: %v", err)})
 						} else {
@@ -1001,7 +1002,7 @@ Please be specific and actionable in your recommendations.`, pod, ns, diagnostic
 						m.messages = append(m.messages, message{sender: systemSender, content: fmt.Sprintf("Failed to update config: %v", err)})
 						break
 					}
-					resolved, status, err := resolveModel(modelName, true)
+					resolved, status, err := llm.ResolveModel(modelName, true)
 					if err != nil {
 						m.messages = append(m.messages, message{sender: systemSender, content: fmt.Sprintf("Error selecting model: %v", err)})
 					} else {

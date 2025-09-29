@@ -529,5 +529,4 @@ func (fr *FlightRecorder) GetLearningInsights() *LearningData {
 	return fr.learningData
 }
 
-// Global flight recorder instance
-var Recorder = NewFlightRecorder("./kubemage_data")
+// Removed global instance - now created via dependency injection
