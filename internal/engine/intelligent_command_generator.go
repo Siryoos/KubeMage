@@ -659,8 +659,8 @@ func (icg *IntelligentCommandGenerator) GetGenerationStats() map[string]interfac
 
 // Removed global instance - now created via dependency injection
 
-// InitializeIntelligentCommandGenerator initializes the global command generator
-func InitializeIntelligentCommandGenerator(modelRouter *ModelRouter, smartCache *SmartCacheSystem) {
-	IntelligentCommandGen = NewIntelligentCommandGenerator(modelRouter, smartCache)
+// InitializeIntelligentCommandGenerator creates a new command generator instance
+func InitializeIntelligentCommandGenerator(modelRouter *ModelRouter, smartCache *SmartCacheSystem) *IntelligentCommandGenerator {
+	return NewIntelligentCommandGenerator(modelRouter, smartCache)
 }
 

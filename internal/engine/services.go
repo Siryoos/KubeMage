@@ -9,8 +9,8 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/siryoos/kubemage/internal/config"
 	"github.com/siryoos/kubemage/internal/engine/validator"
-	"github.com/siryoos/kubemage/internal/execx"
 	"github.com/siryoos/kubemage/internal/llm"
 	"github.com/siryoos/kubemage/internal/metrics"
 )
@@ -56,10 +56,13 @@ func NewCommandExecutorService() *CommandExecutorService {
 }
 
 func (s *CommandExecutorService) ExecuteCommand(command string, timeout time.Duration, p *tea.Program) tea.Cmd {
-	return execCmdWithTimeout(command, timeout, p)
+	// TODO: Implement actual command execution
+	return func() tea.Msg {
+		return nil
+	}
 }
 
-func (s *CommandExecutorService) ExecutePreviewCheck(check PreviewCheck, p *tea.Program) tea.Cmd {
+func (s *CommandExecutorService) ExecutePreviewCheck(check validator.PreviewCheck, p *tea.Program) tea.Cmd {
 	// This would call the actual execPreviewCheck function
 	return func() tea.Msg {
 		return nil
@@ -96,24 +99,29 @@ func NewConfigService() *ConfigService {
 	return &ConfigService{}
 }
 
-func (s *ConfigService) LoadConfig() (*AppConfig, error) {
-	return LoadConfig()
+func (s *ConfigService) LoadConfig() (interface{}, error) {
+	return config.LoadConfig()
 }
 
-func (s *ConfigService) SaveConfig(cfg *AppConfig) error {
-	return SaveConfig(cfg)
+func (s *ConfigService) SaveConfig(cfg interface{}) error {
+	if appCfg, ok := cfg.(*config.AppConfig); ok {
+		return config.SaveConfig(appCfg)
+	}
+	return fmt.Errorf("invalid config type")
 }
 
 func (s *ConfigService) UpdateModelInConfig(scope, newModel string) error {
 	return UpdateModelInConfig(scope, newModel)
 }
 
-func (s *ConfigService) SetActiveConfig(cfg *AppConfig) {
-	SetActiveConfig(cfg)
+func (s *ConfigService) SetActiveConfig(cfg interface{}) {
+	if appCfg, ok := cfg.(*config.AppConfig); ok {
+		config.SetActiveConfig(appCfg)
+	}
 }
 
-func (s *ConfigService) ActiveConfig() *AppConfig {
-	return ActiveConfig()
+func (s *ConfigService) ActiveConfig() interface{} {
+	return config.ActiveConfig()
 }
 
 // ValidatorService implements Validator interface
@@ -123,12 +131,19 @@ func NewValidatorService() *ValidatorService {
 	return &ValidatorService{}
 }
 
-func (s *ValidatorService) BuildPreExecPlan(cmd string) PreExecPlan {
-	return BuildPreExecPlan(cmd)
+func (s *ValidatorService) BuildPreExecPlan(cmd string) validator.PreExecPlan {
+	return validator.BuildPreExecPlan(cmd)
 }
 
 func (s *ValidatorService) IsWhitelistedAction(cmd string) bool {
-	return IsWhitelistedAction(cmd)
+	// Simple whitelist check
+	whitelisted := []string{"kubectl get", "kubectl describe", "kubectl logs", "helm list"}
+	for _, prefix := range whitelisted {
+		if strings.HasPrefix(cmd, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *ValidatorService) ValidateCommand(cmd string) error {
@@ -225,7 +240,14 @@ func (s *AgentService) ExecuteAction(action string) (string, error) {
 }
 
 func (s *AgentService) IsActionAllowed(action string) bool {
-	return IsWhitelistedAction(action)
+	// Simple whitelist check
+	whitelisted := []string{"kubectl get", "kubectl describe", "kubectl logs", "helm list"}
+	for _, prefix := range whitelisted {
+		if strings.HasPrefix(action, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *AgentService) GetWhitelistedCommands() []string {

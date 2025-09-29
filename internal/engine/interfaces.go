@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"context"
 	"time"
 	
 	tea "github.com/charmbracelet/bubbletea"
@@ -54,3 +53,26 @@ type MetricsCollector interface {
 
 // SessionMetrics type alias for compatibility
 type SessionMetrics = metrics.SessionMetrics
+
+// SecurityManager interface for security operations
+type SecurityManager interface {
+	ValidateCommand(command string) error
+	IsWhitelisted(command string) bool
+	AuditAction(action string, user string, result string)
+}
+
+// Agent interface for agent operations
+type Agent interface {
+	StartDiagnosticSession(query string) (interface{}, error)
+	ExecuteAction(action string) (string, error)
+	IsActionAllowed(action string) bool
+	GetWhitelistedCommands() []string
+}
+
+// FileManager interface for file operations
+type FileManager interface {
+	ReadFile(path string) (string, error)
+	WriteFile(path string, content string) error
+	FileExists(path string) bool
+	CreateDirectory(path string) error
+}

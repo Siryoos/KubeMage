@@ -61,10 +61,19 @@ func New(opts Options) (*Engine, error) {
 	e.router = NewIntentRouter()
 	e.intelligence = NewIntelligenceEngine()
 	e.validator = validator.NewValidationPipeline()
-	e.modelRouter = NewModelRouter()
+	
+	// Create smart cache for components that need it
+	smartCache := NewSmartCacheSystem()
+	
+	// Initialize components with dependencies
+	e.modelRouter = NewModelRouter(smartCache)
 	e.performanceOptimizer = NewPerformanceOptimizer()
-	e.predictiveEngine = NewPredictiveIntelligenceEngine()
-	e.commandGenerator = NewIntelligentCommandGenerator()
+	
+	// Create streaming manager for predictive engine
+	streamingManager := NewStreamingIntelligenceManager()
+	e.predictiveEngine = NewPredictiveIntelligenceEngine(smartCache, streamingManager)
+	
+	e.commandGenerator = NewIntelligentCommandGenerator(e.modelRouter, smartCache)
 	e.performanceMonitor = NewRealTimePerformanceMonitor()
 	e.recorder = NewFlightRecorder("./kubemage_data")
 	
@@ -74,6 +83,7 @@ func New(opts Options) (*Engine, error) {
 	e.intelligence.optimizer = e.optimizer
 	e.intelligence.router = e.router
 	e.intelligence.predictive = e.predictiveEngine
+	e.intelligence.cache = smartCache
 	
 	return e, nil
 }
@@ -94,7 +104,7 @@ func (e *Engine) GenerateCommandWithValidation(ctx context.Context, prompt strin
 	
 	// Validate command
 	if e.validator != nil {
-		if err := e.validator.Validate(command); err != nil {
+		if err := e.validator.ValidateCommand(command); err != nil {
 			return "", fmt.Errorf("validation failed: %w", err)
 		}
 	}

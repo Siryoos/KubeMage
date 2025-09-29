@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+	
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 // IntelligenceEngine coordinates all smart analysis components

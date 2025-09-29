@@ -624,8 +624,8 @@ func (mr *ModelRouter) GetModelStats() map[string]interface{} {
 
 // Removed global instance - now created via dependency injection
 
-// InitializeModelRouter initializes the global model router
-func InitializeModelRouter(smartCache *SmartCacheSystem) {
-	GlobalModelRouter = NewModelRouter(smartCache)
+// InitializeModelRouter creates a new model router instance
+func InitializeModelRouter(smartCache *SmartCacheSystem) *ModelRouter {
+	return NewModelRouter(smartCache)
 }
 
