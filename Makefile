@@ -1,11 +1,5 @@
-.PHONY: build
-build:
-	go build -o kubemage
+build: go build ./...
 
-.PHONY: test
-test:
-	go test ./...
+test: go test ./...
 
-.PHONY: run
-run: build
-	./kubemage
+vet: go vet ./...
