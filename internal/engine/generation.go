@@ -291,7 +291,7 @@ func SaveHelmChart(chartName string, files map[string]string) (string, error) {
 type GenerationWorkflow struct {
 	Type              string // "deployment", "service", "helm-chart"
 	OutputPath        string
-	ValidationResults []*ValidationResult
+	ValidationResults []*validator.ValidationResult
 	Success           bool
 	Error             error
 }
@@ -310,16 +310,14 @@ func RunGenerationWorkflow(workflowType, content, outputPath string) *Generation
 	}
 
 	// Initialize validation if needed
-	if ValidationPipe == nil {
-		InitializeValidation()
-	}
+	validationPipe := validator.InitializeValidation()
 
 	// Run validation based on type
 	switch workflowType {
 	case "deployment", "service", "manifest":
-		workflow.ValidationResults = ValidationPipe.ValidateFile(outputPath)
+		workflow.ValidationResults = validationPipe.ValidateFile(outputPath)
 	case "helm-chart":
-		workflow.ValidationResults = ValidationPipe.ValidateDirectory(filepath.Dir(outputPath))
+		workflow.ValidationResults = validationPipe.ValidateDirectory(filepath.Dir(outputPath))
 	}
 
 	// Check if all validations passed

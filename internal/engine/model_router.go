@@ -16,7 +16,7 @@ type ModelRouter struct {
 	deepModel       string  // llama3.1:70b for complex analysis
 	codeModel       string  // codellama for code generation
 	diagnosticModel string  // specialized for diagnostics
-	smartCache      *SmartCache
+	smartCache      *SmartCacheSystem
 	modelSelector   *ModelSelector
 	performanceTracker *ModelPerformanceTracker
 	mu              sync.RWMutex
@@ -131,7 +131,7 @@ type ModelResponse struct {
 // OptimizationRule is now defined in types.go
 
 // NewModelRouter creates a new model router
-func NewModelRouter(smartCache *SmartCache) *ModelRouter {
+func NewModelRouter(smartCache *SmartCacheSystem) *ModelRouter {
 	return &ModelRouter{
 		fastModel:       "llama3.1:8b",
 		deepModel:       "llama3.1:70b",
@@ -622,11 +622,10 @@ func (mr *ModelRouter) GetModelStats() map[string]interface{} {
 	return stats
 }
 
-// Global model router instance
-var GlobalModelRouter *ModelRouter
+// Removed global instance - now created via dependency injection
 
-// InitializeModelRouter initializes the global model router
-func InitializeModelRouter(smartCache *SmartCache) {
-	GlobalModelRouter = NewModelRouter(smartCache)
+// InitializeModelRouter creates a new model router instance
+func InitializeModelRouter(smartCache *SmartCacheSystem) *ModelRouter {
+	return NewModelRouter(smartCache)
 }
 

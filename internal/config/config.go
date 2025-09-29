@@ -8,7 +8,6 @@ import (
 
 	"gopkg.in/yaml.v3"
 	
-	"github.com/siryoos/kubemage/internal/llm"
 )
 
 type ModelSettings struct {
@@ -98,7 +97,7 @@ func DefaultConfig() *AppConfig {
 		},
 		Theme:         "default",
 		HistoryLength: 10,
-		OllamaHost:    llm.DefaultOllamaEndpoint,
+		OllamaHost:    "http://localhost:11434",
 	}
 }
 
@@ -236,4 +235,54 @@ func SetActiveConfig(cfg *AppConfig) {
 
 func ActiveConfig() *AppConfig {
 	return activeConfig
+}
+
+// Load loads the configuration from file
+func Load() (*Config, error) {
+	cfg, err := LoadConfig()
+	if err != nil {
+		// Return default config on error
+		cfg = &AppConfig{
+			Models: ModelSettings{
+				Chat:       "llama3.1:8b",
+				Generation: "llama3.1:8b",
+			},
+			Intelligence: IntelligenceSettings{
+				Enabled:             true,
+				ContextCacheTTL:     300,
+				ConfidenceThreshold: 0.7,
+				AutoOptimization:    true,
+				LearningEnabled:     true,
+				PlaybooksEnabled:    true,
+				RiskAssessment:      true,
+				QuickActionsEnabled: true,
+			},
+			Performance: PerformanceSettings{
+				MaxConcurrent:   5,
+				CommandTimeout:  30,
+				ResponseTimeout: 60,
+				RenderThrottle:  50,
+				MemoryLimit:     512,
+			},
+		}
+	}
+	SetActiveConfig(cfg)
+	return cfg, nil
+}
+
+// GetModel returns the chat model name
+func (c *Config) GetModel() string {
+	if c.Models.Chat != "" {
+		return c.Models.Chat
+	}
+	return "llama3.1:8b"
+}
+
+// GetEndpoint returns the Ollama endpoint
+func (c *Config) GetEndpoint() string {
+	endpoint := os.Getenv("OLLAMA_HOST")
+	if endpoint == "" {
+		endpoint = "http://localhost:11434"
+	}
+	return endpoint
 }

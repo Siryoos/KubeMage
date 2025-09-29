@@ -10,7 +10,7 @@ import (
 )
 
 // NewPredictiveIntelligenceEngine creates a new predictive intelligence engine
-func NewPredictiveIntelligenceEngine(smartCache *SmartCache, streamingManager *StreamingIntelligenceManager) *PredictiveIntelligenceEngine {
+func NewPredictiveIntelligenceEngine(smartCache *SmartCacheSystem, streamingManager *StreamingIntelligenceManager) *PredictiveIntelligenceEngine {
 	return &PredictiveIntelligenceEngine{
 		patternLearner: &PatternLearner{
 			userPatterns:        make(map[string]*UserPattern),
@@ -422,11 +422,10 @@ func (pl *PatternLearner) createClusterPattern(context *KubeContextSummary, acti
 	}
 }
 
-// Global predictive intelligence engine instance
-var PredictiveIntelligence *PredictiveIntelligenceEngine
+// Removed global instance - now created via dependency injection
 
-// InitializePredictiveIntelligence initializes the global predictive intelligence engine
-func InitializePredictiveIntelligence(smartCache *SmartCache, streamingManager *StreamingIntelligenceManager) {
-	PredictiveIntelligence = NewPredictiveIntelligenceEngine(smartCache, streamingManager)
+// InitializePredictiveIntelligence creates a new predictive intelligence engine
+func InitializePredictiveIntelligence(smartCache *SmartCacheSystem, streamingManager *StreamingIntelligenceManager) *PredictiveIntelligenceEngine {
+	return NewPredictiveIntelligenceEngine(smartCache, streamingManager)
 }
 

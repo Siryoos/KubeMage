@@ -11,7 +11,7 @@ import (
 // IntelligentCommandGenerator provides advanced command generation capabilities
 type IntelligentCommandGenerator struct {
 	modelRouter        *ModelRouter
-	smartCache         *SmartCache
+	smartCache         *SmartCacheSystem
 	contextAnalyzer    *ContextAnalyzer
 	commandOptimizer   *CommandOptimizer
 	safetyValidator    *SafetyValidator
@@ -204,7 +204,7 @@ type SafetyCheck struct {
 }
 
 // NewIntelligentCommandGenerator creates a new intelligent command generator
-func NewIntelligentCommandGenerator(modelRouter *ModelRouter, smartCache *SmartCache) *IntelligentCommandGenerator {
+func NewIntelligentCommandGenerator(modelRouter *ModelRouter, smartCache *SmartCacheSystem) *IntelligentCommandGenerator {
 	return &IntelligentCommandGenerator{
 		modelRouter:     modelRouter,
 		smartCache:      smartCache,
@@ -657,11 +657,10 @@ func (icg *IntelligentCommandGenerator) GetGenerationStats() map[string]interfac
 	}
 }
 
-// Global intelligent command generator instance
-var IntelligentCommandGen *IntelligentCommandGenerator
+// Removed global instance - now created via dependency injection
 
-// InitializeIntelligentCommandGenerator initializes the global command generator
-func InitializeIntelligentCommandGenerator(modelRouter *ModelRouter, smartCache *SmartCache) {
-	IntelligentCommandGen = NewIntelligentCommandGenerator(modelRouter, smartCache)
+// InitializeIntelligentCommandGenerator creates a new command generator instance
+func InitializeIntelligentCommandGenerator(modelRouter *ModelRouter, smartCache *SmartCacheSystem) *IntelligentCommandGenerator {
+	return NewIntelligentCommandGenerator(modelRouter, smartCache)
 }
 

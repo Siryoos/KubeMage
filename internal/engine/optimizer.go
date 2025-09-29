@@ -564,5 +564,4 @@ func (oa *OptimizationAdvisor) analyzeHelmSecurity(release string, security inte
 	return []Recommendation{}
 }
 
-// Global optimization advisor instance
-var Optimizer = NewOptimizationAdvisor()
+// Removed global instance - now created via dependency injection
