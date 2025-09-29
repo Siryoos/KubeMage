@@ -14,12 +14,15 @@ import (
 )
 
 type styles struct {
+	// Core message styles
 	userStyle     lipgloss.Style
 	assistStyle   lipgloss.Style
 	execStyle     lipgloss.Style
 	systemStyle   lipgloss.Style
 	yamlKeyStyle  lipgloss.Style
 	errorStyle    lipgloss.Style
+
+	// Panel and layout styles
 	viewportStyle lipgloss.Style
 	diffStyle     lipgloss.Style
 	headerStyle   lipgloss.Style
@@ -29,8 +32,31 @@ type styles struct {
 	hintDescStyle lipgloss.Style
 	inputWrapper  lipgloss.Style
 	footerStyle   lipgloss.Style
+
+	// Context and status styles
 	contextStyle  lipgloss.Style
 	contextAlert  lipgloss.Style
+	riskLowStyle  lipgloss.Style
+	riskMedStyle  lipgloss.Style
+	riskHighStyle lipgloss.Style
+	riskCritStyle lipgloss.Style
+
+	// Intelligence UI styles
+	suggestionStyle     lipgloss.Style
+	insightStyle        lipgloss.Style
+	quickActionStyle    lipgloss.Style
+	confidenceStyle     lipgloss.Style
+	healthyIndicator    lipgloss.Style
+	warningIndicator    lipgloss.Style
+	errorIndicator      lipgloss.Style
+
+	// Interactive elements
+	hotKeyStyle         lipgloss.Style
+	clickableStyle      lipgloss.Style
+	selectedStyle       lipgloss.Style
+	badgeStyle          lipgloss.Style
+	progressStyle       lipgloss.Style
+	spacerStyle         lipgloss.Style
 }
 
 type layoutMode int
@@ -70,23 +96,51 @@ const (
 
 func defaultStyles() styles {
 	return styles{
-		userStyle:     lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("63")),  // Blue
-		assistStyle:   lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("82")),  // Green
-		execStyle:     lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("220")), // Yellow
-		systemStyle:   lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("240")), // Gray
-		yamlKeyStyle:  lipgloss.NewStyle().Foreground(lipgloss.Color("178")),            // Orange
-		errorStyle:    lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("196")), // Red
-		viewportStyle: lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("96")).Padding(0, 1),
-		diffStyle:     lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("99")).Padding(0, 1),
-		headerStyle:   lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("255")).Background(lipgloss.Color("57")).Padding(0, 1),
-		statusStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("183")).Padding(0, 1),
-		hintBoxStyle:  lipgloss.NewStyle().MarginTop(1).Padding(0, 1).Border(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("60")).Align(lipgloss.Left),
-		hintKeyStyle:  lipgloss.NewStyle().Foreground(lipgloss.Color("75")).Bold(true),
-		hintDescStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("244")),
-		inputWrapper:  lipgloss.NewStyle().MarginTop(1).Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("63")).Padding(0, 1),
-		footerStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("244")).MarginTop(1),
-		contextStyle:  lipgloss.NewStyle().Foreground(lipgloss.Color("145")).Background(lipgloss.Color("17")).Padding(0, 1),
-		contextAlert:  lipgloss.NewStyle().Foreground(lipgloss.Color("230")).Background(lipgloss.Color("124")).Bold(true).Padding(0, 1),
+		// Core message styles with improved colors
+		userStyle:     lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#00D4FF")),  // Bright cyan
+		assistStyle:   lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#00FF88")),  // Bright green
+		execStyle:     lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#FFD700")), // Gold
+		systemStyle:   lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#8A8A8A")), // Gray
+		yamlKeyStyle:  lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8C42")),            // Orange
+		errorStyle:    lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#FF4757")), // Red
+
+		// Enhanced panel styles with modern borders
+		viewportStyle: lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("#5F87AF")).Padding(0, 1),
+		diffStyle:     lipgloss.NewStyle().Border(lipgloss.DoubleBorder()).BorderForeground(lipgloss.Color("#AF87FF")).Padding(0, 1),
+		headerStyle:   lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#FFFFFF")).Background(lipgloss.Color("#2E3440")).Padding(0, 2),
+		statusStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("#D8DEE9")).Padding(0, 1),
+		hintBoxStyle:  lipgloss.NewStyle().MarginTop(1).Padding(1).Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("#4C566A")).Align(lipgloss.Left),
+		hintKeyStyle:  lipgloss.NewStyle().Foreground(lipgloss.Color("#81A1C1")).Bold(true),
+		hintDescStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("#D8DEE9")),
+		inputWrapper:  lipgloss.NewStyle().MarginTop(1).Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("#5E81AC")).Padding(0, 1),
+		footerStyle:   lipgloss.NewStyle().Foreground(lipgloss.Color("#4C566A")).MarginTop(1),
+
+		// Context awareness styles
+		contextStyle:  lipgloss.NewStyle().Foreground(lipgloss.Color("#ECEFF4")).Background(lipgloss.Color("#3B4252")).Padding(0, 1),
+		contextAlert:  lipgloss.NewStyle().Foreground(lipgloss.Color("#ECEFF4")).Background(lipgloss.Color("#BF616A")).Bold(true).Padding(0, 1),
+
+		// Risk level indicators
+		riskLowStyle:  lipgloss.NewStyle().Foreground(lipgloss.Color("#A3BE8C")).Bold(true),
+		riskMedStyle:  lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")).Bold(true),
+		riskHighStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("#D08770")).Bold(true),
+		riskCritStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("#BF616A")).Bold(true).Blink(true),
+
+		// Intelligence UI styles
+		suggestionStyle:     lipgloss.NewStyle().Foreground(lipgloss.Color("#B48EAD")).Background(lipgloss.Color("#434C5E")).Padding(0, 1).Margin(0, 1),
+		insightStyle:        lipgloss.NewStyle().Foreground(lipgloss.Color("#88C0D0")).Border(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("#5E81AC")).Padding(1),
+		quickActionStyle:    lipgloss.NewStyle().Foreground(lipgloss.Color("#ECEFF4")).Background(lipgloss.Color("#5E81AC")).Padding(0, 1).Margin(0, 1),
+		confidenceStyle:     lipgloss.NewStyle().Foreground(lipgloss.Color("#A3BE8C")).Italic(true),
+		healthyIndicator:    lipgloss.NewStyle().Foreground(lipgloss.Color("#A3BE8C")),
+		warningIndicator:    lipgloss.NewStyle().Foreground(lipgloss.Color("#EBCB8B")),
+		errorIndicator:      lipgloss.NewStyle().Foreground(lipgloss.Color("#BF616A")),
+
+		// Interactive elements
+		hotKeyStyle:         lipgloss.NewStyle().Foreground(lipgloss.Color("#88C0D0")).Bold(true).Underline(true),
+		clickableStyle:      lipgloss.NewStyle().Foreground(lipgloss.Color("#81A1C1")).Underline(true),
+		selectedStyle:       lipgloss.NewStyle().Foreground(lipgloss.Color("#ECEFF4")).Background(lipgloss.Color("#5E81AC")),
+		badgeStyle:          lipgloss.NewStyle().Foreground(lipgloss.Color("#2E3440")).Background(lipgloss.Color("#D08770")).Padding(0, 1),
+		progressStyle:       lipgloss.NewStyle().Foreground(lipgloss.Color("#A3BE8C")),
+		spacerStyle:         lipgloss.NewStyle().Foreground(lipgloss.Color("#4C566A")),
 	}
 }
 
@@ -107,7 +161,7 @@ type commandHint struct {
 }
 
 var commandPalette = []commandHint{
-	{"/help", "Toggle inline help"},
+	{"/help", "Toggle comprehensive help with new features"},
 	{"/model list", "List available Ollama models"},
 	{"/model set chat <name>", "Switch chat assistant model"},
 	{"/model set generation <name>", "Switch generation/diff model"},
@@ -115,7 +169,11 @@ var commandPalette = []commandHint{
 	{"/edit-values <path> <instruction>", "Generate a diff for Helm values"},
 	{"/gen-deploy <name> --image <img>", "Draft a deployment manifest"},
 	{"/gen-helm <chart> [flags]", "Generate a Helm chart skeleton"},
-	{"/metrics", "Show session metrics"},
+	{"/diag-pod <name>", "Run intelligent pod diagnostics"},
+	{"/agent", "Toggle ReAct agent mode"},
+	{"/ctx", "Show current cluster context"},
+	{"/ns set <namespace>", "Switch active namespace"},
+	{"/metrics", "Show comprehensive session metrics"},
 	{"/resolve [note]", "Mark the current task as resolved"},
 }
 
@@ -125,6 +183,14 @@ type contextSummaryMsg struct {
 }
 
 type clockTickMsg time.Time
+
+type commandTrackedMsg struct {
+	command string
+}
+
+type asyncIntelligenceResultMsg struct {
+	result IntelligenceResult
+}
 
 func generateStreamCmd(m *model, history []message, modelName string) tea.Cmd {
 	return func() tea.Msg {
@@ -194,6 +260,31 @@ type model struct {
 	rbacUser              string
 	liveTokens            int
 	lastFooterUpdate      time.Time
+
+	// Enhanced intelligence features
+	intelligentUI         *IntelligentUI
+	currentContext        *KubeContextSummary
+	lastIntelligenceUpdate time.Time
+	showSuggestions       bool
+	showInsights          bool
+	selectedSuggestion    int
+	clusterHealth         string
+	riskLevel             RiskLevel
+
+	// Smart refresh tracking
+	lastContextHash       string
+	lastUserInput         time.Time
+	recentCommands        []string
+	maxRecentCommands     int
+	userTypingTimeout     time.Duration
+
+	// Async intelligence tracking
+	pendingIntelligenceWork map[string]bool
+	asyncIntelligenceEnabled bool
+
+	// Streaming intelligence
+	streamingManager *StreamingIntelligenceManager
+	intelligenceSubscriber *StreamSubscriber
 }
 
 func InitialModel(defaultModel string, cfg *Config, dumpMetrics bool) *model {
@@ -257,7 +348,63 @@ func InitialModel(defaultModel string, cfg *Config, dumpMetrics bool) *model {
 		ctxName:             "(ctx)",
 		namespace:           "(ns)",
 		rbacUser:            rbacUser,
+
+		// Initialize intelligence features
+		intelligentUI:         NewIntelligentUI(),
+		showSuggestions:       true,
+		showInsights:          true,
+		selectedSuggestion:    -1,
+		clusterHealth:         "unknown",
+		riskLevel:             RiskLevel{Level: "low", Factors: []string{}, Reversible: true},
+		lastIntelligenceUpdate: time.Time{},
+
+		// Initialize smart refresh tracking
+		lastContextHash:       "",
+		lastUserInput:         time.Time{},
+		recentCommands:        make([]string, 0),
+		maxRecentCommands:     10,
+		userTypingTimeout:     3 * time.Second,
+
+		// Initialize async intelligence tracking
+		pendingIntelligenceWork:  make(map[string]bool),
+		asyncIntelligenceEnabled: true,
 	}
+
+	// Initialize streaming intelligence
+	m.streamingManager = NewStreamingIntelligenceManager(nil) // Program will be set later
+	filters := []UpdateFilter{
+		{Type: UpdateTypeRiskChange, MinPriority: 5},
+		{Type: UpdateTypeNewSuggestion, MinPriority: 3},
+		{Type: UpdateTypeContextChange, MinPriority: 7},
+		{Type: UpdateTypeHealthChange, MinPriority: 6},
+	}
+	m.intelligenceSubscriber = m.streamingManager.Subscribe("main_ui", filters, 50)
+
+	// Initialize predictive intelligence if smart cache is available
+	if SmartCache != nil {
+		InitializePredictiveIntelligence(SmartCache, m.streamingManager)
+	}
+
+	// Initialize model router for intelligent model selection
+	if SmartCache != nil {
+		InitializeModelRouter(SmartCache)
+	}
+
+	// Initialize adaptive UI manager
+	if m.streamingManager != nil {
+		InitializeAdaptiveUI(m.streamingManager)
+	}
+
+	// Initialize performance optimizer
+	InitializePerformanceOptimizer()
+
+	// Initialize intelligent command generator
+	if ModelRouter != nil && SmartCache != nil {
+		InitializeIntelligentCommandGenerator(ModelRouter, SmartCache)
+	}
+
+	// Initialize real-time performance monitor
+	InitializeRealTimePerformanceMonitor()
 
 	if strings.TrimSpace(m.generationModel) == "" {
 		m.generationModel = m.ollamaModel
@@ -273,6 +420,12 @@ func InitialModel(defaultModel string, cfg *Config, dumpMetrics bool) *model {
 	m.chatViewport.SetContent(m.renderMessages())
 	m.refreshPreviewPane()
 	m.refreshOutputPane()
+
+	// Initialize async intelligence processing
+	if m.asyncIntelligenceEnabled {
+		Intelligence.InitializeAsyncProcessor(m.program)
+	}
+
 	return m
 }
 
@@ -281,14 +434,29 @@ func (m *model) updateLayout() {
 		return
 	}
 
+	// Smart responsive layout adjustments
 	contentWidth := m.windowWidth - 6
 	if contentWidth < 60 {
 		contentWidth = 60
 	}
-	contentHeight := m.windowHeight - 12
+
+	// Intelligent height calculation considering intelligence panels
+	baseHeight := m.windowHeight - 12
+	intelligencePanelHeight := m.calculateIntelligencePanelHeight()
+	contentHeight := baseHeight - intelligencePanelHeight
+
 	if contentHeight < 15 {
 		contentHeight = 15
+		// If too cramped, reduce intelligence panel
+		intelligencePanelHeight = baseHeight - 15
+		if intelligencePanelHeight < 0 {
+			intelligencePanelHeight = 0
+		}
 	}
+
+	// Adaptive layout based on screen size and content
+	isSmallScreen := m.windowWidth < 120 || m.windowHeight < 40
+	isMediumScreen := m.windowWidth < 160 || m.windowHeight < 50
 
 	chatWidth := contentWidth
 	chatHeight := contentHeight
@@ -299,7 +467,20 @@ func (m *model) updateLayout() {
 
 	switch m.layout {
 	case layoutThreePane:
-		chatWidth = int(float64(contentWidth) * 0.55)
+		if isSmallScreen {
+			// Force vertical layout on small screens
+			m.layout = layoutVerticalSplit
+			m.updateLayout()
+			return
+		}
+
+		// Intelligent width allocation based on content
+		chatRatio := 0.55
+		if m.intelligentUI != nil && len(m.intelligentUI.suggestions) > 0 {
+			chatRatio = 0.5 // More space for preview when suggestions exist
+		}
+
+		chatWidth = int(float64(contentWidth) * chatRatio)
 		if chatWidth < 40 {
 			chatWidth = 40
 		}
@@ -308,7 +489,16 @@ func (m *model) updateLayout() {
 			previewWidth = 30
 		}
 		outputWidth = previewWidth
-		previewHeight = contentHeight / 2
+
+		// Dynamic height allocation based on content importance
+		previewRatio := 0.5
+		if m.rightTopMode == rightPaneDiff {
+			previewRatio = 0.6 // More space for diffs
+		} else if m.activeCommand != "" {
+			previewRatio = 0.4 // More space for output when command running
+		}
+
+		previewHeight = int(float64(contentHeight) * previewRatio)
 		if previewHeight < 8 {
 			previewHeight = 8
 		}
@@ -317,8 +507,14 @@ func (m *model) updateLayout() {
 			outputHeight = 6
 		}
 		chatHeight = contentHeight
+
 	case layoutVerticalSplit:
-		chatWidth = int(float64(contentWidth) * 0.6)
+		chatRatio := 0.6
+		if isMediumScreen {
+			chatRatio = 0.7 // More chat space on medium screens
+		}
+
+		chatWidth = int(float64(contentWidth) * chatRatio)
 		if chatWidth < 45 {
 			chatWidth = 45
 		}
@@ -327,9 +523,15 @@ func (m *model) updateLayout() {
 		previewHeight = contentHeight
 		outputHeight = contentHeight
 		chatHeight = contentHeight
+
 	case layoutHorizontalSplit:
 		chatWidth = contentWidth
-		chatHeight = int(float64(contentHeight) * 0.55)
+		chatRatio := 0.55
+		if m.intelligentUI != nil && m.intelligentUI.IsHighRisk() {
+			chatRatio = 0.5 // More space for preview in high-risk situations
+		}
+
+		chatHeight = int(float64(contentHeight) * chatRatio)
 		if chatHeight < 10 {
 			chatHeight = 10
 		}
@@ -340,6 +542,7 @@ func (m *model) updateLayout() {
 		}
 		outputWidth = previewWidth
 		outputHeight = previewHeight
+
 	case layoutChatOnly:
 		chatWidth = contentWidth
 		chatHeight = contentHeight
@@ -349,6 +552,7 @@ func (m *model) updateLayout() {
 		outputHeight = 0
 	}
 
+	// Apply layout with smooth transitions
 	yOffset := m.chatViewport.YOffset
 	m.chatViewport.Width = chatWidth
 	m.chatViewport.Height = chatHeight
@@ -373,6 +577,7 @@ func (m *model) updateLayout() {
 		m.outputViewport.Height = 0
 	}
 
+	// Smart textarea width
 	textareaWidth := chatWidth
 	if m.layout == layoutThreePane && previewWidth > 0 {
 		textareaWidth = contentWidth
@@ -380,8 +585,48 @@ func (m *model) updateLayout() {
 	if textareaWidth < 40 {
 		textareaWidth = 40
 	}
+
+	// Adaptive textarea height based on context
+	textareaHeight := 3
+	if m.intelligentUI != nil && m.intelligentUI.IsHighRisk() {
+		textareaHeight = 2 // Smaller input area in high-risk situations
+	} else if isSmallScreen {
+		textareaHeight = 2
+	}
+
 	m.textarea.SetWidth(textareaWidth)
-	m.textarea.SetHeight(3)
+	m.textarea.SetHeight(textareaHeight)
+}
+
+// calculateIntelligencePanelHeight estimates space needed for intelligence components
+func (m *model) calculateIntelligencePanelHeight() int {
+	if m.intelligentUI == nil {
+		return 0
+	}
+
+	height := 0
+
+	// Suggestions panel
+	if m.showSuggestions && len(m.intelligentUI.suggestions) > 0 {
+		height += 4 + len(m.intelligentUI.suggestions) // Header + suggestions
+	}
+
+	// Insights panel
+	if m.showInsights && len(m.intelligentUI.insights) > 0 {
+		height += 3 + (len(m.intelligentUI.insights) * 2) // Header + insights with spacing
+	}
+
+	// Risk warning
+	if m.intelligentUI.IsHighRisk() {
+		height += 2
+	}
+
+	// Panel borders and margins
+	if height > 0 {
+		height += 4 // Border + margins
+	}
+
+	return height
 }
 
 func (m *model) DumpMetrics() {
@@ -426,12 +671,53 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case clockTickMsg:
 		m.lastFooterUpdate = time.Time(msg)
 		tickCmd = scheduleClockTick()
+	case commandTrackedMsg:
+		m.trackCommand(msg.command)
+	case asyncIntelligenceResultMsg:
+		m.handleAsyncIntelligenceResult(msg.result)
+	case streamingIntelligenceUpdateMsg:
+		m.handleStreamingIntelligenceUpdate(msg.update)
 	case tea.KeyMsg:
 		switch msg.Type {
+		case tea.KeyF1:
+			// Handle F1 hotkey for first AI suggestion
+			if m.intelligentUI != nil {
+				if suggestion := m.intelligentUI.HandleHotkey("F1"); suggestion != nil {
+					m.executeAISuggestion(suggestion)
+				}
+			}
+			return m, nil
 		case tea.KeyF2:
+			// F2 for layout switching and second AI suggestion
+			if m.intelligentUI != nil && len(m.intelligentUI.suggestions) > 1 {
+				if suggestion := m.intelligentUI.HandleHotkey("F2"); suggestion != nil {
+					m.executeAISuggestion(suggestion)
+					return m, nil
+				}
+			}
 			m.layout = m.layout.next()
 			m.updateLayout()
 			return m, tea.Batch(tacmd, chatcmd, prevcmd, outcmd)
+		case tea.KeyF3:
+			// Handle F3 hotkey for third AI suggestion
+			if m.intelligentUI != nil {
+				if suggestion := m.intelligentUI.HandleHotkey("F3"); suggestion != nil {
+					m.executeAISuggestion(suggestion)
+				}
+			}
+			return m, nil
+		case tea.KeyF4:
+			// Toggle suggestions panel
+			m.showSuggestions = !m.showSuggestions
+			return m, nil
+		case tea.KeyF5:
+			// Toggle insights panel
+			m.showInsights = !m.showInsights
+			return m, nil
+		case tea.KeyF12:
+			// Force refresh intelligence
+			m.refreshIntelligence()
+			return m, nil
 		case tea.KeyCtrlC, tea.KeyEsc:
 			m.DumpMetrics()
 			return m, tea.Quit
@@ -788,6 +1074,35 @@ Please be specific and actionable in your recommendations.`, pod, ns, diagnostic
 			if trimmed == "" {
 				return m, nil
 			}
+
+			// Track user input for smart refresh
+			m.trackUserInput()
+
+			// Update intelligence with user input
+			if m.intelligentUI != nil && m.currentContext != nil {
+				err := m.intelligentUI.UpdateIntelligence(trimmed, m.currentContext)
+				if err == nil {
+					m.riskLevel = m.intelligentUI.GetCurrentRiskLevel()
+					m.lastIntelligenceUpdate = time.Now()
+
+					// Show intelligent suggestions if confidence is low
+					if session := m.intelligentUI.GetCurrentSession(); session != nil && session.Confidence < 0.7 {
+						suggestions := m.intelligentUI.FormatSuggestions()
+						if suggestions != "" {
+							m.messages = append(m.messages, message{sender: systemSender, content: "🤖 AI Suggestions available - press F1-F3 to use them"})
+						}
+					}
+
+					// Get predictive suggestions if available
+					if PredictiveIntelligence != nil {
+						predictions := PredictiveIntelligence.PredictNextActions(m.currentContext, trimmed)
+						if len(predictions) > 0 {
+							m.messages = append(m.messages, message{sender: systemSender, content: fmt.Sprintf("🔮 %d predictive suggestions available", len(predictions))})
+						}
+					}
+				}
+			}
+
 			m.command = ""
 			m.currentPlan = nil
 			m.refreshPreviewPane()
@@ -993,6 +1308,24 @@ Please be specific and actionable in your recommendations.`, pod, ns, diagnostic
 		m.refreshOutputPane()
 
 	case execDoneMsg:
+		// Learn from command execution for predictive intelligence
+		if PredictiveIntelligence != nil && m.currentContext != nil {
+			userInput := ""
+			if len(m.messages) > 1 {
+				// Find the last user input
+				for i := len(m.messages) - 1; i >= 0; i-- {
+					if m.messages[i].sender == user {
+						userInput = m.messages[i].content
+						break
+					}
+				}
+			}
+			
+			success := msg.err == nil
+			duration := time.Since(time.Now()) // This would be actual execution time in real implementation
+			PredictiveIntelligence.LearnFromInteraction(userInput, m.currentContext, msg.cmd, success, duration)
+		}
+
 		if m.agentMode && m.agentState == "acting" {
 			observation := ""
 			if msg.err != nil {
@@ -1122,14 +1455,23 @@ func (m *model) View() string {
 		body = chatSection
 	}
 
+	// Refresh intelligence if needed
+	if m.shouldRefreshIntelligence() {
+		m.refreshIntelligenceAsync()
+	}
+
 	hints := m.renderCommandHints()
+	intelligence := m.renderIntelligencePanel()
 	input := m.styles.inputWrapper.Render(m.textarea.View())
 	help := m.renderHelpBlock()
-	context := m.renderContextFooter()
+	context := m.renderEnhancedContextFooter()
 
 	sections := []string{header, body}
 	if hints != "" {
 		sections = append(sections, hints)
+	}
+	if intelligence != "" {
+		sections = append(sections, intelligence)
 	}
 	sections = append(sections, input)
 	if help != "" {
@@ -1207,6 +1549,19 @@ func (m *model) refreshPreviewPane() {
 	var sections []string
 	mode := rightPaneText
 
+	// Use adaptive UI for layout optimization if available
+	if AdaptiveUI != nil && m.currentContext != nil {
+		content := ""
+		if len(sections) > 0 {
+			content = strings.Join(sections, "\n")
+		}
+		adaptedLayout := AdaptiveUI.AdaptLayout(content, m.currentContext, m.layout)
+		if adaptedLayout != m.layout {
+			m.layout = adaptedLayout
+			m.updateLayout()
+		}
+	}
+
 	if m.pendingDiff != nil {
 		switch m.pendingDiff.Phase() {
 		case DiffPhaseAwaiting:
@@ -1230,7 +1585,15 @@ func (m *model) refreshPreviewPane() {
 	}
 
 	if len(sections) == 0 && strings.TrimSpace(m.command) != "" {
-		sections = append(sections, fmt.Sprintf("Pending command:\n$ %s", m.command))
+		// Enhanced command preview with highlighting and explanation
+		highlightedCmd := m.highlightCommand(m.command)
+		sections = append(sections, fmt.Sprintf("Pending command:\n$ %s", highlightedCmd))
+
+		// Add command explanation
+		explanation := m.explainCommand(m.command)
+		if explanation != "" {
+			sections = append(sections, explanation)
+		}
 	}
 
 	if len(sections) == 0 {
@@ -1420,12 +1783,41 @@ func (m *model) renderHelpBlock() string {
 	if !m.showHelp {
 		return ""
 	}
-	lines := []string{
-		"Shortcuts: Enter ask • Ctrl+E run preview • Ctrl+K clear preview • Ctrl+H toggle help",
-		"Slash: /model set chat <name>, /edit-yaml <file> <instruction>, /metrics, /resolve",
+
+	helpSections := []string{
+		m.styles.hintKeyStyle.Render("🎮 Enhanced Controls:"),
+		"Enter: Ask question • Ctrl+E: Execute command • Ctrl+K: Clear preview",
+		"Ctrl+H: Toggle help • F2: Change layout • Ctrl+C: Exit",
+		"",
+		m.styles.hintKeyStyle.Render("🤖 AI Intelligence Hotkeys:"),
+		"F1-F3: Execute AI suggestions • F4: Toggle suggestions • F5: Toggle insights",
+		"F12: Force refresh intelligence",
+		"",
+		m.styles.hintKeyStyle.Render("💬 Slash Commands:"),
+		"/model set chat <name> • /edit-yaml <file> <instruction> • /metrics",
+		"/resolve [note] • /agent • /diag-pod <name> • /ctx • /ns set <namespace>",
+		"",
+		m.styles.hintKeyStyle.Render("🎨 Features:"),
+		"• Real-time cluster health monitoring with risk indicators",
+		"• Intelligent command suggestions based on context",
+		"• Syntax highlighting and command explanations",
+		"• Multi-step diagnostic workflows with pattern recognition",
+		"• Responsive layout adapting to screen size and content",
+		"",
+		m.styles.warningIndicator.Render("⚠️ Prerequisites:"),
 		"Ensure 'ollama serve' is running locally or set OLLAMA_HOST",
+		"Active kubectl context required for cluster operations",
 	}
-	return m.styles.footerStyle.Render(strings.Join(lines, "\n"))
+
+	// Style the help content
+	helpContent := strings.Join(helpSections, "\n")
+	helpStyle := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#4C566A")).
+		Padding(1).
+		Margin(1)
+
+	return helpStyle.Render(helpContent)
 }
 
 func (m *model) renderCommandPreview() string {
@@ -1444,6 +1836,177 @@ func (m *model) highlightYAML(content string) string {
 		highlightedContent = strings.ReplaceAll(highlightedContent, keyword, m.styles.yamlKeyStyle.Render(keyword))
 	}
 	return highlightedContent
+}
+
+// highlightCommand provides syntax highlighting for kubectl/helm commands
+func (m *model) highlightCommand(command string) string {
+	if strings.TrimSpace(command) == "" {
+		return command
+	}
+
+	// Split command into parts for highlighting
+	parts := strings.Fields(command)
+	if len(parts) == 0 {
+		return command
+	}
+
+	var highlighted []string
+
+	for i, part := range parts {
+		switch {
+		case i == 0: // Command name
+			if strings.HasPrefix(part, "kubectl") {
+				highlighted = append(highlighted, m.styles.execStyle.Render(part))
+			} else if strings.HasPrefix(part, "helm") {
+				highlighted = append(highlighted, m.styles.assistStyle.Render(part))
+			} else {
+				highlighted = append(highlighted, m.styles.systemStyle.Render(part))
+			}
+
+		case strings.HasPrefix(part, "--"): // Flags
+			highlighted = append(highlighted, m.styles.hintKeyStyle.Render(part))
+
+		case strings.HasPrefix(part, "-"): // Short flags
+			highlighted = append(highlighted, m.styles.hintKeyStyle.Render(part))
+
+		case part == "get" || part == "describe" || part == "logs" || part == "delete" || part == "apply":
+			// Kubectl verbs
+			highlighted = append(highlighted, m.styles.yamlKeyStyle.Render(part))
+
+		case part == "install" || part == "upgrade" || part == "uninstall" || part == "lint":
+			// Helm verbs
+			highlighted = append(highlighted, m.styles.yamlKeyStyle.Render(part))
+
+		case strings.Contains(part, "="): // Key-value pairs
+			kvParts := strings.SplitN(part, "=", 2)
+			if len(kvParts) == 2 {
+				highlighted = append(highlighted,
+					m.styles.hintKeyStyle.Render(kvParts[0]) + "=" + m.styles.hintDescStyle.Render(kvParts[1]))
+			} else {
+				highlighted = append(highlighted, part)
+			}
+
+		default:
+			// Regular arguments
+			highlighted = append(highlighted, m.styles.hintDescStyle.Render(part))
+		}
+	}
+
+	return strings.Join(highlighted, " ")
+}
+
+// explainCommand provides intelligent explanations for commands
+func (m *model) explainCommand(command string) string {
+	if strings.TrimSpace(command) == "" {
+		return ""
+	}
+
+	parts := strings.Fields(command)
+	if len(parts) == 0 {
+		return ""
+	}
+
+	var explanations []string
+
+	// Command-specific explanations
+	if strings.HasPrefix(command, "kubectl") {
+		if len(parts) > 1 {
+			switch parts[1] {
+			case "get":
+				explanations = append(explanations, "📄 Retrieves and displays resources")
+				if strings.Contains(command, "--dry-run") {
+					explanations = append(explanations, "🔍 Dry-run mode - no changes will be made")
+				}
+			case "describe":
+				explanations = append(explanations, "🔍 Shows detailed information about resources")
+			case "logs":
+				explanations = append(explanations, "📋 Displays container logs")
+				if strings.Contains(command, "--previous") {
+					explanations = append(explanations, "⏮️ Shows logs from previous container instance")
+				}
+			case "apply":
+				explanations = append(explanations, "🚀 Creates or updates resources from configuration")
+				if strings.Contains(command, "--dry-run") {
+					explanations = append(explanations, "✅ Safe dry-run - validates without applying")
+				}
+			case "delete":
+				explanations = append(explanations, "🗑️ Removes resources from cluster")
+				explanations = append(explanations, "⚠️ DESTRUCTIVE OPERATION")
+			case "top":
+				explanations = append(explanations, "📊 Shows resource usage metrics")
+			}
+		}
+	} else if strings.HasPrefix(command, "helm") {
+		if len(parts) > 1 {
+			switch parts[1] {
+			case "install":
+				explanations = append(explanations, "📦 Installs a new Helm chart")
+				if strings.Contains(command, "--dry-run") {
+					explanations = append(explanations, "🔍 Dry-run mode - simulates installation")
+				}
+			case "upgrade":
+				explanations = append(explanations, "⬆️ Upgrades an existing Helm release")
+			case "uninstall":
+				explanations = append(explanations, "🗑️ Removes a Helm release")
+				explanations = append(explanations, "⚠️ DESTRUCTIVE OPERATION")
+			case "lint":
+				explanations = append(explanations, "🔍 Validates chart syntax and best practices")
+			case "template":
+				explanations = append(explanations, "📝 Renders chart templates locally")
+			}
+		}
+	}
+
+	// Risk assessment
+	riskLevel := m.assessCommandRisk(command)
+	switch riskLevel {
+	case "low":
+		explanations = append(explanations, m.styles.healthyIndicator.Render("🟢 Low risk - safe to execute"))
+	case "medium":
+		explanations = append(explanations, m.styles.warningIndicator.Render("🟡 Medium risk - review carefully"))
+	case "high":
+		explanations = append(explanations, m.styles.errorIndicator.Render("🔴 High risk - production impact possible"))
+	case "critical":
+		explanations = append(explanations, m.styles.riskCritStyle.Render("🚨 CRITICAL RISK - potential data loss"))
+	}
+
+	if len(explanations) == 0 {
+		return ""
+	}
+
+	return strings.Join(explanations, "\n")
+}
+
+// assessCommandRisk evaluates the risk level of a command
+func (m *model) assessCommandRisk(command string) string {
+	cmdLower := strings.ToLower(command)
+
+	// Critical risk patterns
+	if strings.Contains(cmdLower, "delete") && (strings.Contains(cmdLower, "--all") || strings.Contains(cmdLower, "*")) {
+		return "critical"
+	}
+
+	// High risk patterns
+	if strings.Contains(cmdLower, "delete") || strings.Contains(cmdLower, "uninstall") {
+		return "high"
+	}
+
+	// Medium risk patterns
+	if strings.Contains(cmdLower, "apply") || strings.Contains(cmdLower, "patch") || strings.Contains(cmdLower, "install") || strings.Contains(cmdLower, "upgrade") {
+		if strings.Contains(cmdLower, "--dry-run") {
+			return "low"
+		}
+		return "medium"
+	}
+
+	// Low risk (read-only operations)
+	if strings.Contains(cmdLower, "get") || strings.Contains(cmdLower, "describe") ||
+	   strings.Contains(cmdLower, "logs") || strings.Contains(cmdLower, "top") ||
+	   strings.Contains(cmdLower, "lint") || strings.Contains(cmdLower, "template") {
+		return "low"
+	}
+
+	return "medium"
 }
 
 func parseCommandFromResponse(response string) string {
@@ -1942,4 +2505,518 @@ func (m *model) buildChatPrompt(history []message) string {
 
 	sb.WriteString("Assistant:")
 	return sb.String()
+}
+
+// Enhanced intelligence methods for TUI
+
+func (m *model) executeAISuggestion(suggestion *AISuggestion) {
+	switch suggestion.Type {
+	case "diagnostic":
+		m.agentMode = true
+		m.agentState = "thinking"
+		m.messages = append(m.messages, message{sender: systemSender, content: fmt.Sprintf("🔍 Executing AI suggestion: %s", suggestion.Title)})
+	case "optimization":
+		m.messages = append(m.messages, message{sender: systemSender, content: fmt.Sprintf("⚡ Applying optimization: %s", suggestion.Title)})
+	case "clarification":
+		m.messages = append(m.messages, message{sender: systemSender, content: fmt.Sprintf("❓ Clarifying intent: %s", suggestion.Description)})
+	default:
+		m.messages = append(m.messages, message{sender: systemSender, content: fmt.Sprintf("🤖 AI Suggestion: %s", suggestion.Action)})
+	}
+
+	// Add the suggestion action to textarea for execution
+	m.textarea.SetValue(suggestion.Action)
+	m.chatViewport.SetContent(m.renderMessages())
+	m.chatViewport.GotoBottom()
+}
+
+func (m *model) refreshIntelligence() {
+	if m.intelligentUI == nil {
+		return
+	}
+
+	// Get current context
+	context, err := BuildContextSummary()
+	if err == nil {
+		m.currentContext = context
+		m.ctxName = context.Context
+		m.namespace = context.Namespace
+
+		// Update cluster health
+		if len(context.PodProblemCounts) == 0 {
+			m.clusterHealth = "healthy"
+		} else if len(context.PodProblemCounts) > 5 {
+			m.clusterHealth = "critical"
+		} else {
+			m.clusterHealth = "warning"
+		}
+	}
+
+	// Update intelligence with current input using smart caching
+	input := strings.TrimSpace(m.textarea.Value())
+	if input != "" {
+		// Try cache-enabled analysis first
+		session, err := Intelligence.AnalyzeIntelligentyWithCache(input, m.currentContext)
+		if err == nil && session != nil {
+			m.intelligentUI.currentSession = session
+			m.riskLevel = m.intelligentUI.calculateUIRiskLevel(session, m.currentContext)
+			m.lastIntelligenceUpdate = time.Now()
+		} else {
+			// Fallback to regular intelligence update
+			err := m.intelligentUI.UpdateIntelligence(input, m.currentContext)
+			if err == nil {
+				m.riskLevel = m.intelligentUI.GetCurrentRiskLevel()
+				m.lastIntelligenceUpdate = time.Now()
+			}
+		}
+	}
+}
+
+func (m *model) shouldRefreshIntelligence() bool {
+	if m.intelligentUI == nil {
+		return false
+	}
+
+	// Smart activity-based refresh logic
+	timeSinceUpdate := time.Since(m.lastIntelligenceUpdate)
+
+	// Force refresh if context changed significantly
+	if m.contextChanged() {
+		return true
+	}
+
+	// Refresh if user is actively typing and enough time has passed
+	if m.isUserTyping() && timeSinceUpdate > 5*time.Second {
+		return true
+	}
+
+	// Refresh if cluster state likely changed (based on recent commands)
+	if m.clusterStateChanged() && timeSinceUpdate > 10*time.Second {
+		return true
+	}
+
+	// Fallback: refresh every 60s for background monitoring (doubled from 30s)
+	if timeSinceUpdate > 60*time.Second {
+		return true
+	}
+
+	return m.intelligentUI.NeedsRefresh()
+}
+
+func (m *model) renderIntelligencePanel() string {
+	if m.intelligentUI == nil {
+		return ""
+	}
+
+	var sections []string
+
+	// Quick actions
+	if m.showSuggestions {
+		if suggestions := m.intelligentUI.FormatSuggestions(); suggestions != "" {
+			sections = append(sections, suggestions)
+		}
+	}
+
+	// Insights
+	if m.showInsights {
+		if insights := m.intelligentUI.FormatInsights(); insights != "" {
+			sections = append(sections, insights)
+		}
+	}
+
+	// Risk indicator
+	if m.intelligentUI.IsHighRisk() {
+		riskIndicator := m.styles.riskHighStyle.Render("⚠️ HIGH RISK ENVIRONMENT")
+		if m.riskLevel.Level == "critical" {
+			riskIndicator = m.styles.riskCritStyle.Render("🚨 CRITICAL RISK")
+		}
+		sections = append(sections, riskIndicator)
+	}
+
+	if len(sections) == 0 {
+		return ""
+	}
+
+	// Style the panel
+	panelStyle := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#5E81AC")).
+		Padding(1).
+		Margin(1)
+
+	return panelStyle.Render(strings.Join(sections, "\n\n"))
+}
+
+func (m *model) renderEnhancedContextFooter() string {
+	if m.intelligentUI == nil {
+		return m.renderContextFooter()
+	}
+
+	// Build enhanced status with intelligence indicators
+	var statusParts []string
+
+	// Context info with health indicator
+	if m.currentContext != nil {
+		ctxStyle := m.styles.contextStyle
+		if strings.Contains(strings.ToLower(m.namespace), "prod") {
+			ctxStyle = m.styles.contextAlert
+		}
+
+		healthIcon := "🟢"
+		healthStyle := m.styles.healthyIndicator
+		switch m.clusterHealth {
+		case "warning":
+			healthIcon = "🟡"
+			healthStyle = m.styles.warningIndicator
+		case "critical":
+			healthIcon = "🔴"
+			healthStyle = m.styles.errorIndicator
+		}
+
+		statusParts = append(statusParts,
+			fmt.Sprintf("ctx:%s", ctxStyle.Render(m.ctxName)),
+			fmt.Sprintf("ns:%s", ctxStyle.Render(m.namespace)),
+			fmt.Sprintf("health:%s", healthStyle.Render(healthIcon+m.clusterHealth)))
+	}
+
+	// Model and intelligence info
+	modelStyle := m.styles.statusStyle
+	statusParts = append(statusParts, fmt.Sprintf("model:%s", modelStyle.Render(modelFooterLabel(m.ollamaModel))))
+
+	// Risk indicator
+	riskIndicator := m.intelligentUI.FormatRiskIndicator()
+	statusParts = append(statusParts, fmt.Sprintf("risk:%s", riskIndicator))
+
+	// Intelligence confidence
+	if session := m.intelligentUI.GetCurrentSession(); session != nil {
+		confStyle := m.styles.confidenceStyle
+		confidence := fmt.Sprintf("%.0f%%", session.Confidence*100)
+		statusParts = append(statusParts, fmt.Sprintf("ai:%s", confStyle.Render(confidence)))
+	}
+
+	// Time
+	timeStyle := m.styles.statusStyle
+	statusParts = append(statusParts, fmt.Sprintf("time:%s", timeStyle.Render(time.Now().Format("15:04:05"))))
+
+	return m.styles.contextStyle.Render(strings.Join(statusParts, " "))
+}
+
+// Smart refresh helper methods
+
+func (m *model) contextChanged() bool {
+	if m.currentContext == nil {
+		return false
+	}
+
+	// Create a hash of the current context
+	contextHash := fmt.Sprintf("%s:%s:%d:%d",
+		m.currentContext.Context,
+		m.currentContext.Namespace,
+		len(m.currentContext.PodPhaseCounts),
+		len(m.currentContext.PodProblemCounts))
+
+	if m.lastContextHash != contextHash {
+		m.lastContextHash = contextHash
+		return true
+	}
+
+	return false
+}
+
+func (m *model) isUserTyping() bool {
+	// Check if user input is recent
+	timeSinceInput := time.Since(m.lastUserInput)
+	return timeSinceInput < m.userTypingTimeout
+}
+
+func (m *model) clusterStateChanged() bool {
+	// Check if recent commands likely changed cluster state
+	for _, cmd := range m.recentCommands {
+		cmdLower := strings.ToLower(cmd)
+		if strings.Contains(cmdLower, "apply") ||
+		   strings.Contains(cmdLower, "create") ||
+		   strings.Contains(cmdLower, "delete") ||
+		   strings.Contains(cmdLower, "patch") ||
+		   strings.Contains(cmdLower, "scale") ||
+		   strings.Contains(cmdLower, "install") ||
+		   strings.Contains(cmdLower, "upgrade") {
+			return true
+		}
+	}
+	return false
+}
+
+func (m *model) trackUserInput() {
+	m.lastUserInput = time.Now()
+}
+
+func (m *model) trackCommand(command string) {
+	// Add command to recent commands
+	m.recentCommands = append(m.recentCommands, command)
+
+	// Keep only recent commands (rolling window)
+	if len(m.recentCommands) > m.maxRecentCommands {
+		m.recentCommands = m.recentCommands[1:]
+	}
+}
+
+// handleAsyncIntelligenceResult processes async intelligence results
+func (m *model) handleAsyncIntelligenceResult(result IntelligenceResult) {
+	// Remove from pending work
+	delete(m.pendingIntelligenceWork, result.ID)
+
+	if !result.Success {
+		// Handle error case
+		if result.Error != nil {
+			m.messages = append(m.messages, message{
+				sender:  systemSender,
+				content: fmt.Sprintf("⚠️ Intelligence analysis failed: %v", result.Error),
+			})
+		}
+		return
+	}
+
+	// Process successful result
+	switch result.Type {
+	case WorkTypeAnalysis:
+		if session, ok := result.Data.(*AnalysisSession); ok {
+			// Update intelligence UI with the new analysis
+			if m.intelligentUI != nil {
+				m.riskLevel = m.intelligentUI.GetCurrentRiskLevel()
+				m.lastIntelligenceUpdate = time.Now()
+
+				// Show suggestions if confidence is low
+				if session.Confidence < 0.7 {
+					suggestions := m.intelligentUI.FormatSuggestions()
+					if suggestions != "" {
+						m.messages = append(m.messages, message{
+							sender:  systemSender,
+							content: "🤖 AI Analysis complete - suggestions available (F1-F3)",
+						})
+					}
+				}
+			}
+		}
+	}
+
+	// Refresh UI
+	m.chatViewport.SetContent(m.renderMessages())
+	m.chatViewport.GotoBottom()
+}
+
+// handleStreamingIntelligenceUpdate processes streaming intelligence updates
+func (m *model) handleStreamingIntelligenceUpdate(update IntelligenceUpdate) {
+	if m.intelligentUI == nil {
+		return
+	}
+
+	switch update.Type {
+	case UpdateTypeRiskChange:
+		if riskData, ok := update.Data.(RiskLevel); ok {
+			m.riskLevel = riskData
+			// Publish risk change notification if significant
+			if riskData.Level == "high" || riskData.Level == "critical" {
+				m.messages = append(m.messages, message{
+					sender:  systemSender,
+					content: fmt.Sprintf("⚠️ Risk level changed to %s: %s",
+						strings.ToUpper(riskData.Level),
+						strings.Join(riskData.Factors, ", ")),
+				})
+			}
+		}
+
+	case UpdateTypeContextChange:
+		if contextData, ok := update.Data.(*KubeContextSummary); ok {
+			m.currentContext = contextData
+			m.ctxName = contextData.Context
+			m.namespace = contextData.Namespace
+
+			// Invalidate related cache entries
+			if update.Invalidates != nil {
+				for _, cacheKey := range update.Invalidates {
+					Intelligence.InvalidateCache(cacheKey)
+				}
+			}
+		}
+
+	case UpdateTypeHealthChange:
+		if healthData, ok := update.Data.(string); ok {
+			oldHealth := m.clusterHealth
+			m.clusterHealth = healthData
+
+			// Notify if health degraded
+			if (oldHealth == "healthy" && healthData != "healthy") ||
+			   (oldHealth != "critical" && healthData == "critical") {
+				icon := "⚠️"
+				if healthData == "critical" {
+					icon = "🚨"
+				}
+				m.messages = append(m.messages, message{
+					sender:  systemSender,
+					content: fmt.Sprintf("%s Cluster health changed: %s → %s",
+						icon, oldHealth, healthData),
+				})
+			}
+		}
+
+	case UpdateTypeNewSuggestion:
+		if suggestion, ok := update.Data.(AISuggestion); ok {
+			// Add new suggestion to UI
+			m.intelligentUI.suggestions = append(m.intelligentUI.suggestions, suggestion)
+
+			// Notify user of high-confidence suggestions
+			if suggestion.Confidence > 0.8 && update.Priority >= 7 {
+				m.messages = append(m.messages, message{
+					sender:  systemSender,
+					content: fmt.Sprintf("💡 High-confidence suggestion: %s (%.0f%%) [%s]",
+						suggestion.Title,
+						suggestion.Confidence*100,
+						suggestion.Hotkey),
+				})
+			}
+		}
+
+	case UpdateTypePrediction:
+		// Handle predictive intelligence updates
+		if update.Priority >= 8 {
+			m.messages = append(m.messages, message{
+				sender:  systemSender,
+				content: "🔮 Predictive intelligence updated with new patterns",
+			})
+		}
+
+	case UpdateTypeOptimization:
+		// Handle optimization recommendations
+		if update.Priority >= 7 {
+			m.messages = append(m.messages, message{
+				sender:  systemSender,
+				content: "⚡ New optimization recommendations available",
+			})
+		}
+	}
+
+	// Update activity tracking
+	if m.streamingManager != nil {
+		activity := m.calculateCurrentActivity()
+		typingSpeed := m.calculateTypingSpeed()
+		m.streamingManager.UpdateUserActivity(activity, typingSpeed)
+	}
+
+	// Refresh UI components
+	m.updateIntelligenceUI()
+}
+
+// refreshIntelligenceAsync uses async intelligence processing when possible
+func (m *model) refreshIntelligenceAsync() {
+	if m.intelligentUI == nil {
+		return
+	}
+
+	// Get current context
+	context, err := BuildContextSummary()
+	if err == nil {
+		m.currentContext = context
+		m.ctxName = context.Context
+		m.namespace = context.Namespace
+
+		// Update cluster health
+		if len(context.PodProblemCounts) == 0 {
+			m.clusterHealth = "healthy"
+		} else if len(context.PodProblemCounts) > 5 {
+			m.clusterHealth = "critical"
+		} else {
+			m.clusterHealth = "warning"
+		}
+	}
+
+	// Get current input
+	input := strings.TrimSpace(m.textarea.Value())
+	if input == "" {
+		return
+	}
+
+	// Use async processing if enabled
+	if m.asyncIntelligenceEnabled && Intelligence.processor != nil {
+		callback := func(result IntelligenceResult) {
+			// This will be handled by the async result message
+		}
+
+		// Determine priority based on user activity
+		if m.isUserTyping() {
+			workID := Intelligence.AnalyzeIntelligentlyHighPriority(input, m.currentContext, callback)
+			m.pendingIntelligenceWork[workID] = true
+		} else {
+			workID := Intelligence.AnalyzeIntelligentlyAsync(input, m.currentContext, callback)
+			m.pendingIntelligenceWork[workID] = true
+		}
+	} else {
+		// Fallback to sync processing
+		err := m.intelligentUI.UpdateIntelligence(input, m.currentContext)
+		if err == nil {
+			m.riskLevel = m.intelligentUI.GetCurrentRiskLevel()
+			m.lastIntelligenceUpdate = time.Now()
+		}
+	}
+}
+
+// Helper methods for streaming intelligence
+
+func (m *model) calculateCurrentActivity() ActivityLevel {
+	if m.textarea.Focused() {
+		timeSinceInput := time.Since(m.lastUserInput)
+		if timeSinceInput < 2*time.Second {
+			return ActivityIntense
+		} else if timeSinceInput < 5*time.Second {
+			return ActivityHigh
+		} else if timeSinceInput < 15*time.Second {
+			return ActivityModerate
+		} else if timeSinceInput < 60*time.Second {
+			return ActivityLow
+		}
+	}
+	return ActivityIdle
+}
+
+func (m *model) calculateTypingSpeed() float64 {
+	// Calculate characters per minute based on recent typing
+	if len(m.textarea.Value()) == 0 {
+		return 0.0
+	}
+
+	timeSinceInput := time.Since(m.lastUserInput)
+	if timeSinceInput == 0 {
+		return 0.0
+	}
+
+	charactersTyped := float64(len(m.textarea.Value()))
+	minutes := timeSinceInput.Minutes()
+	if minutes == 0 {
+		return charactersTyped * 60.0 // Assume 1 second = 1/60 minute
+	}
+
+	return charactersTyped / minutes
+}
+
+func (m *model) updateIntelligenceUI() {
+	// Force refresh of intelligence UI components
+	m.chatViewport.SetContent(m.renderMessages())
+	m.outputViewport.SetContent(m.formatRightPane())
+}
+
+func (m *model) publishIntelligenceUpdate(updateType IntelligenceUpdateType, data interface{}, priority int) {
+	if m.streamingManager == nil {
+		return
+	}
+
+	update := IntelligenceUpdate{
+		ID:        fmt.Sprintf("%s_%d", updateType, time.Now().UnixNano()),
+		Type:      updateType,
+		Priority:  priority,
+		Source:    "tui",
+		Data:      data,
+		Context:   m.currentContext,
+		Confidence: 0.8, // Default confidence
+		TTL:       5 * time.Minute,
+	}
+
+	m.streamingManager.PublishUpdate(update)
 }

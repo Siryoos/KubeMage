@@ -150,6 +150,38 @@ func (ui *IntelligentUI) generateAISuggestions(session *AnalysisSession) []AISug
 		})
 	}
 
+	// Predictive suggestions - get them from the intelligence engine
+	if session.Context != nil {
+		predictiveActions := Intelligence.GetPredictiveActions("", session.Context)
+		for i, action := range predictiveActions {
+			if i >= 3 { // Limit to top 3 predictive suggestions
+				break
+			}
+
+			hotkey := fmt.Sprintf("F%d", i+4) // F4, F5, F6 for predictive actions
+			icon := "🔮"
+			switch action.Type {
+			case "diagnostic":
+				icon = "🔍"
+			case "command":
+				icon = "⚡"
+			case "explanation":
+				icon = "💡"
+			}
+
+			suggestions = append(suggestions, AISuggestion{
+				ID:          fmt.Sprintf("predictive-%d", i),
+				Type:        "predictive",
+				Title:       fmt.Sprintf("Predicted: %s", action.Description),
+				Description: fmt.Sprintf("Based on patterns (%.0f%% confidence)", action.Confidence*100),
+				Action:      action.Command,
+				Confidence:  action.Confidence,
+				Icon:        icon,
+				Hotkey:      hotkey,
+			})
+		}
+	}
+
 	// Optimization suggestions
 	criticalOpts := 0
 	for _, opt := range session.Optimization {

@@ -68,6 +68,11 @@ func parseCommand(command string) *exec.Cmd {
 // execCmdWithTimeout executes a command with a timeout
 func execCmdWithTimeout(command string, timeout time.Duration, p *tea.Program) tea.Cmd {
 	return func() tea.Msg {
+		// Track command execution for smart refresh
+		if p != nil {
+			p.Send(commandTrackedMsg{command: command})
+		}
+
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		defer cancel()
 

@@ -57,6 +57,15 @@ func GenerateCommand(prompt, model string) (string, error) {
 		modelName = defaultModelName
 	}
 
+	// Use model router if available and no specific model requested
+	if ModelRouter != nil && model == "" {
+		if context, err := BuildContextSummary(); err == nil {
+			if selectedModel, err := ModelRouter.SelectModel(prompt, context); err == nil {
+				modelName = selectedModel
+			}
+		}
+	}
+
 	if ctxSum, err := BuildContextSummary(); err == nil && ctxSum != nil {
 		// Prepend a short context banner. Keep it tiny to save tokens.
 		prompt = fmt.Sprintf("[CTX] %s\n\n%s", ctxSum.RenderedOneLiner, prompt)
@@ -89,6 +98,15 @@ func GenerateChatStream(prompt string, ch chan<- string, model string, systemPro
 	modelName := model
 	if modelName == "" {
 		modelName = defaultModelName
+	}
+
+	// Use model router if available and no specific model requested
+	if ModelRouter != nil && model == "" {
+		if context, err := BuildContextSummary(); err == nil {
+			if selectedModel, err := ModelRouter.SelectModel(prompt, context); err == nil {
+				modelName = selectedModel
+			}
+		}
 	}
 
 	if ctxSum, err := BuildContextSummary(); err == nil && ctxSum != nil {

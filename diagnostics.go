@@ -199,6 +199,72 @@ func (rs *ReActSession) ProcessModelResponse(response string) error {
 	return fmt.Errorf("no valid Action: or Final: found in response")
 }
 
+// GetIntelligentSuggestions provides next-step suggestions based on current diagnostic state
+func (rs *ReActSession) GetIntelligentSuggestions() []string {
+	if rs.Completed {
+		return []string{"Diagnostic complete. Review findings and implement suggested fixes."}
+	}
+
+	if len(rs.Steps) == 0 {
+		return []string{
+			"Start with 'kubectl get pods' to check pod status",
+			"Use 'kubectl get events' to see recent cluster activity",
+			"Run 'kubectl describe deployment <name>' for specific issues",
+		}
+	}
+
+	lastStep := rs.Steps[len(rs.Steps)-1]
+	if !lastStep.Allowed {
+		return []string{"Previous action was blocked. Use only read-only kubectl commands."}
+	}
+
+	// Analyze last observation for intelligent next steps
+	obs := strings.ToLower(lastStep.Observation)
+
+	if strings.Contains(obs, "imagepullbackoff") {
+		return []string{
+			"Check image name and tag with 'kubectl describe pod <name>'",
+			"Verify registry access and credentials",
+			"Look for recent events with 'kubectl get events --sort-by=.lastTimestamp'",
+		}
+	}
+
+	if strings.Contains(obs, "crashloopbackoff") {
+		return []string{
+			"Check container logs with 'kubectl logs <pod> --previous'",
+			"Examine resource limits with 'kubectl describe pod <name>'",
+			"Check liveness/readiness probes configuration",
+		}
+	}
+
+	if strings.Contains(obs, "pending") {
+		return []string{
+			"Check node resources with 'kubectl describe nodes'",
+			"Look for scheduling events with 'kubectl get events'",
+			"Verify resource requests and limits",
+		}
+	}
+
+	// Default suggestions based on step count
+	switch len(rs.Steps) {
+	case 1:
+		return []string{
+			"Examine specific pods with 'kubectl describe pod <name>'",
+			"Check recent events for more context",
+		}
+	case 2:
+		return []string{
+			"Look at logs with 'kubectl logs <pod>'",
+			"Check resource usage with 'kubectl top pods'",
+		}
+	default:
+		return []string{
+			"Analyze findings and formulate conclusions",
+			"Provide final diagnosis with 'Final: <your analysis>'",
+		}
+	}
+}
+
 // ExecuteAction safely executes a whitelisted action
 func (rs *ReActSession) ExecuteAction(action string) error {
 	if rs.CurrentStep >= rs.MaxSteps {
@@ -283,7 +349,107 @@ func (rs *ReActSession) GetSessionSummary() string {
 		summary.WriteString(fmt.Sprintf("✅ COMPLETED\nFinal Answer: %s\n", rs.FinalAnswer))
 	} else {
 		summary.WriteString("🔄 Session ongoing...\n")
+		// Add intelligent suggestions
+		suggestions := rs.GetIntelligentSuggestions()
+		if len(suggestions) > 0 {
+			summary.WriteString("\n💡 Suggested next steps:\n")
+			for i, suggestion := range suggestions {
+				summary.WriteString(fmt.Sprintf("  %d. %s\n", i+1, suggestion))
+			}
+		}
 	}
 
 	return summary.String()
+}
+
+// GetDiagnosticInsights analyzes the session for intelligent insights
+func (rs *ReActSession) GetDiagnosticInsights() []string {
+	var insights []string
+
+	if len(rs.Steps) == 0 {
+		return []string{"No diagnostic steps taken yet. Start with basic cluster overview commands."}
+	}
+
+	// Analyze patterns in executed commands
+	hasDescribe := false
+	hasLogs := false
+	hasEvents := false
+	errorPatterns := make(map[string]int)
+
+	for _, step := range rs.Steps {
+		if step.Allowed {
+			action := strings.ToLower(step.Action)
+			if strings.Contains(action, "describe") {
+				hasDescribe = true
+			}
+			if strings.Contains(action, "logs") {
+				hasLogs = true
+			}
+			if strings.Contains(action, "events") {
+				hasEvents = true
+			}
+
+			// Analyze observations for error patterns
+			obs := strings.ToLower(step.Observation)
+			if strings.Contains(obs, "imagepullbackoff") {
+				errorPatterns["ImagePullBackOff"]++
+			}
+			if strings.Contains(obs, "crashloopbackoff") {
+				errorPatterns["CrashLoopBackOff"]++
+			}
+			if strings.Contains(obs, "oomkilled") {
+				errorPatterns["OOMKilled"]++
+			}
+			if strings.Contains(obs, "pending") {
+				errorPatterns["Pending"]++
+			}
+		}
+	}
+
+	// Generate insights based on analysis
+	if !hasDescribe && len(rs.Steps) > 1 {
+		insights = append(insights, "Consider using 'kubectl describe' for detailed resource information")
+	}
+
+	if !hasEvents && len(rs.Steps) > 1 {
+		insights = append(insights, "Check 'kubectl get events' for recent cluster activity and warnings")
+	}
+
+	if !hasLogs && len(rs.Steps) > 2 {
+		insights = append(insights, "Container logs often provide crucial debugging information")
+	}
+
+	// Report detected error patterns
+	for pattern, count := range errorPatterns {
+		if count > 0 {
+			insights = append(insights, fmt.Sprintf("Detected %s pattern (%d occurrences) - focus on %s", pattern, count, getPatternAdvice(pattern)))
+		}
+	}
+
+	// Session progress insights
+	if len(rs.Steps) >= rs.MaxSteps-1 && !rs.Completed {
+		insights = append(insights, "Approaching maximum steps - consider providing final diagnosis")
+	}
+
+	if len(insights) == 0 {
+		insights = append(insights, "Diagnostic session progressing well. Continue systematic investigation.")
+	}
+
+	return insights
+}
+
+// getPatternAdvice provides specific advice for common error patterns
+func getPatternAdvice(pattern string) string {
+	switch pattern {
+	case "ImagePullBackOff":
+		return "image registry access, image name/tag correctness, network connectivity"
+	case "CrashLoopBackOff":
+		return "application startup issues, resource limits, configuration problems"
+	case "OOMKilled":
+		return "memory resource limits, application memory usage optimization"
+	case "Pending":
+		return "node resources, scheduling constraints, resource quotas"
+	default:
+		return "root cause analysis and resolution strategies"
+	}
 }

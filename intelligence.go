@@ -10,11 +10,14 @@ import (
 
 // IntelligenceEngine coordinates all smart analysis components
 type IntelligenceEngine struct {
-	facts     *FactHelper
-	knowledge *PlaybookLibrary
-	optimizer *OptimizationAdvisor
-	router    *IntentRouter
-	history   []AnalysisSession
+	facts       *FactHelper
+	knowledge   *PlaybookLibrary
+	optimizer   *OptimizationAdvisor
+	router      *IntentRouter
+	history     []AnalysisSession
+	processor   *AsyncIntelligenceProcessor
+	predictive  *PredictiveEngine
+	cache       *SmartCacheSystem
 }
 
 // AnalysisSession represents a complete intelligence analysis session
@@ -68,7 +71,91 @@ func NewIntelligenceEngine() *IntelligenceEngine {
 		knowledge: Knowledge,
 		optimizer: Optimizer,
 		history:   make([]AnalysisSession, 0),
+		processor: nil, // Will be initialized when TUI starts
+		predictive: PredictiveIntelligence,
+		cache:     NewSmartCacheSystem(100, 500, 2*time.Hour), // L1: 100 items, L2: 500 items, L3: 2h max age
 	}
+}
+
+// InitializeAsyncProcessor initializes the async processing system
+func (ie *IntelligenceEngine) InitializeAsyncProcessor(program *tea.Program) {
+	ie.processor = NewAsyncIntelligenceProcessor(3, program) // 3 workers
+	ie.processor.Start()
+}
+
+// StopAsyncProcessor stops the async processing system
+func (ie *IntelligenceEngine) StopAsyncProcessor() {
+	if ie.processor != nil {
+		ie.processor.Stop()
+	}
+}
+
+// AnalyzeIntelligentlyAsync submits intelligence analysis for async processing
+func (ie *IntelligenceEngine) AnalyzeIntelligentlyAsync(input string, context *KubeContextSummary, callback func(IntelligenceResult)) string {
+	if ie.processor == nil {
+		// Fallback to sync processing
+		session, err := ie.AnalyzeIntelligently(input, context)
+		if callback != nil {
+			result := IntelligenceResult{
+				ID:      fmt.Sprintf("sync-%d", time.Now().Unix()),
+				Type:    WorkTypeAnalysis,
+				Success: err == nil,
+				Data:    session,
+				Error:   err,
+			}
+			callback(result)
+		}
+		return result.ID
+	}
+
+	workID := fmt.Sprintf("analysis-%d", time.Now().Unix())
+	work := IntelligenceWork{
+		ID:         workID,
+		Type:       WorkTypeAnalysis,
+		Priority:   5, // Medium priority
+		Input:      input,
+		Context:    context,
+		Callback:   callback,
+		Timeout:    10 * time.Second,
+		MaxRetries: 2,
+	}
+
+	ie.processor.SubmitWork(work)
+	return workID
+}
+
+// AnalyzeIntelligentlyHighPriority submits high-priority intelligence analysis
+func (ie *IntelligenceEngine) AnalyzeIntelligentlyHighPriority(input string, context *KubeContextSummary, callback func(IntelligenceResult)) string {
+	if ie.processor == nil {
+		// Fallback to sync processing
+		session, err := ie.AnalyzeIntelligently(input, context)
+		if callback != nil {
+			result := IntelligenceResult{
+				ID:      fmt.Sprintf("sync-hp-%d", time.Now().Unix()),
+				Type:    WorkTypeAnalysis,
+				Success: err == nil,
+				Data:    session,
+				Error:   err,
+			}
+			callback(result)
+		}
+		return result.ID
+	}
+
+	workID := fmt.Sprintf("analysis-hp-%d", time.Now().Unix())
+	work := IntelligenceWork{
+		ID:         workID,
+		Type:       WorkTypeAnalysis,
+		Priority:   10, // Highest priority
+		Input:      input,
+		Context:    context,
+		Callback:   callback,
+		Timeout:    5 * time.Second,
+		MaxRetries: 1,
+	}
+
+	ie.processor.SubmitHighPriorityWork(work)
+	return workID
 }
 
 // AnalyzeIntelligently performs comprehensive intelligent analysis
@@ -504,5 +591,213 @@ func (ie *IntelligenceEngine) GetIntelligentInsights(session *AnalysisSession) [
 	return insights
 }
 
+// GetPredictiveActions returns predictive action suggestions
+func (ie *IntelligenceEngine) GetPredictiveActions(input string, context *KubeContextSummary) []PredictedAction {
+	if ie.predictive == nil {
+		return nil
+	}
+	return ie.predictive.PredictActions(input, context)
+}
+
+// LearnFromUserAction learns from user actions to improve predictions
+func (ie *IntelligenceEngine) LearnFromUserAction(input string, context *KubeContextSummary, action string, success bool) {
+	if ie.predictive != nil {
+		ie.predictive.LearnFromInteraction(input, context, action, success)
+	}
+}
+
+// GetPredictiveInsights returns insights about prediction accuracy and patterns
+func (ie *IntelligenceEngine) GetPredictiveInsights() map[string]interface{} {
+	if ie.predictive == nil {
+		return nil
+	}
+
+	insights := make(map[string]interface{})
+
+	// Cache statistics
+	cacheStats := map[string]interface{}{
+		"hit_rate":       ie.predictive.predictionCache.hitRate,
+		"total_requests": ie.predictive.predictionCache.totalRequests,
+		"cache_hits":     ie.predictive.predictionCache.cacheHits,
+		"cache_size":     len(ie.predictive.predictionCache.entries),
+	}
+	insights["cache_stats"] = cacheStats
+
+	// Pattern statistics
+	patternStats := map[string]interface{}{
+		"total_patterns":    len(ie.predictive.patterns),
+		"context_patterns":  len(ie.predictive.contextPatterns),
+		"min_confidence":    ie.predictive.minConfidence,
+		"enabled":          ie.predictive.enabled,
+	}
+	insights["pattern_stats"] = patternStats
+
+	// User behavior insights
+	if ie.predictive.userBehavior != nil {
+		behaviorStats := map[string]interface{}{
+			"total_commands":    ie.predictive.userBehavior.CommandFrequency["total"],
+			"unique_commands":   len(ie.predictive.userBehavior.CommandFrequency) - 1, // Excluding "total"
+			"sequence_patterns": len(ie.predictive.userBehavior.SequencePatterns),
+			"last_updated":      ie.predictive.userBehavior.LastUpdated,
+		}
+		insights["behavior_stats"] = behaviorStats
+	}
+
+	return insights
+}
+
+// GetCacheStats returns smart cache system statistics
+func (ie *IntelligenceEngine) GetCacheStats() *CacheStats {
+	if ie.cache == nil {
+		return nil
+	}
+	stats := ie.cache.GetStats()
+	return &stats
+}
+
+// GetCacheHitRatio returns overall cache hit ratio
+func (ie *IntelligenceEngine) GetCacheHitRatio() float64 {
+	if ie.cache == nil {
+		return 0.0
+	}
+	return ie.cache.GetHitRatio()
+}
+
+// InvalidateCache invalidates cache entries matching a pattern
+func (ie *IntelligenceEngine) InvalidateCache(pattern string) {
+	if ie.cache != nil {
+		ie.cache.Invalidate(pattern)
+	}
+}
+
+// AnalyzeIntelligentyWithCache performs analysis with smart caching
+func (ie *IntelligenceEngine) AnalyzeIntelligentyWithCache(input string, context *KubeContextSummary) (*AnalysisSession, error) {
+	// Generate cache key based on input and context
+	cacheKey := fmt.Sprintf("analysis_%s_%s_%s",
+		input,
+		context.Context,
+		context.Namespace)
+
+	// Try cache first
+	if ie.cache != nil {
+		if cached, found := ie.cache.Get(cacheKey, CacheTypeAnalysis); found {
+			if session, ok := cached.(*AnalysisSession); ok {
+				return session, nil
+			}
+		}
+	}
+
+	// Cache miss - perform analysis
+	session, err := ie.AnalyzeIntelligently(input, context)
+	if err != nil {
+		return nil, err
+	}
+
+	// Cache the result
+	if ie.cache != nil {
+		ie.cache.Set(cacheKey, session, CacheTypeAnalysis, 10*time.Minute)
+	}
+
+	return session, nil
+}
+
+// GetOptimizationWithCache retrieves optimization recommendations with caching
+func (ie *IntelligenceEngine) GetOptimizationWithCache(context *KubeContextSummary) []Recommendation {
+	if context == nil {
+		return nil
+	}
+
+	cacheKey := fmt.Sprintf("optimization_%s_%s", context.Context, context.Namespace)
+
+	// Try cache first
+	if ie.cache != nil {
+		if cached, found := ie.cache.Get(cacheKey, CacheTypeOptimization); found {
+			if recommendations, ok := cached.([]Recommendation); ok {
+				return recommendations
+			}
+		}
+	}
+
+	// Cache miss - generate recommendations
+	recommendations := ie.optimizer.GetOptimizationRecommendations(context)
+
+	// Cache the result
+	if ie.cache != nil {
+		ie.cache.Set(cacheKey, recommendations, CacheTypeOptimization, 15*time.Minute)
+	}
+
+	return recommendations
+}
+
+// WarmupCache preloads frequently used data
+func (ie *IntelligenceEngine) WarmupCache(context *KubeContextSummary) {
+	if ie.cache == nil {
+		return
+	}
+
+	// Preload common analysis patterns
+	commonInputs := []string{
+		"show pod status",
+		"list failing pods",
+		"check resource usage",
+		"diagnose issues",
+		"optimize performance",
+	}
+
+	for _, input := range commonInputs {
+		go func(inp string) {
+			_, _ = ie.AnalyzeIntelligentyWithCache(inp, context)
+		}(input)
+	}
+}
+
 // Global intelligence engine instance
 var Intelligence = NewIntelligenceEngine()
+
+// Enhanced intelligence analysis with predictive capabilities
+func (ie *IntelligenceEngine) AnalyzeIntelligentlyWithPrediction(input string, context *KubeContextSummary) (*AnalysisSession, error) {
+	// First run standard analysis
+	session, err := ie.AnalyzeIntelligently(input, context)
+	if err != nil {
+		return nil, err
+	}
+
+	// Add predictive intelligence if available
+	if PredictiveIntelligence != nil {
+		predictions := PredictiveIntelligence.PredictNextActions(context, input)
+		
+		// Convert predictions to intelligent actions
+		for _, pred := range predictions {
+			action := IntelligentAction{
+				Type:        "predictive",
+				Priority:    pred.Priority,
+				Description: fmt.Sprintf("Predicted: %s (%.0f%% confidence)", pred.Action, pred.Confidence*100),
+				Command:     pred.Action,
+				Risk: RiskLevel{
+					Level:       pred.RiskLevel,
+					Factors:     []string{"predictive analysis"},
+					Mitigations: []string{"verify before execution"},
+					Reversible:  true,
+				},
+				Expected:  fmt.Sprintf("Estimated completion: %v", pred.EstimatedTime),
+				Automated: pred.Confidence > 0.8,
+				PreChecks: pred.Prerequisites,
+			}
+			session.Actions = append(session.Actions, action)
+		}
+
+		// Update confidence based on predictions
+		if len(predictions) > 0 {
+			avgPredictionConfidence := 0.0
+			for _, pred := range predictions {
+				avgPredictionConfidence += pred.Confidence
+			}
+			avgPredictionConfidence /= float64(len(predictions))
+			
+			// Blend original confidence with prediction confidence
+			session.Confidence = (session.Confidence + avgPredictionConfidence) / 2.0
+		}
+	}
+
+	return session, nil
+}
