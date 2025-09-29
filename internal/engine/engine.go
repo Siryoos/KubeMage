@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"fmt"
+	"time"
 	
 	"github.com/siryoos/kubemage/internal/config"
 	"github.com/siryoos/kubemage/internal/engine/validator"
@@ -63,14 +64,16 @@ func New(opts Options) (*Engine, error) {
 	e.validator = validator.NewValidationPipeline()
 	
 	// Create smart cache for components that need it
-	smartCache := NewSmartCacheSystem()
+	// L1: 100 items (hot cache), L2: 1000 items (warm cache), L3: 5 minutes max age
+	smartCache := NewSmartCacheSystem(100, 1000, 5*time.Minute)
 	
 	// Initialize components with dependencies
 	e.modelRouter = NewModelRouter(smartCache)
 	e.performanceOptimizer = NewPerformanceOptimizer()
 	
 	// Create streaming manager for predictive engine
-	streamingManager := NewStreamingIntelligenceManager()
+	// Pass nil for now as we don't have a TUI program at engine level
+	streamingManager := NewStreamingIntelligenceManager(nil)
 	e.predictiveEngine = NewPredictiveIntelligenceEngine(smartCache, streamingManager)
 	
 	e.commandGenerator = NewIntelligentCommandGenerator(e.modelRouter, smartCache)

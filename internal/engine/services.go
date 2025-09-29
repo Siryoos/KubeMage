@@ -111,7 +111,7 @@ func (s *ConfigService) SaveConfig(cfg interface{}) error {
 }
 
 func (s *ConfigService) UpdateModelInConfig(scope, newModel string) error {
-	return UpdateModelInConfig(scope, newModel)
+	return config.UpdateModelInConfig(scope, newModel)
 }
 
 func (s *ConfigService) SetActiveConfig(cfg interface{}) {
